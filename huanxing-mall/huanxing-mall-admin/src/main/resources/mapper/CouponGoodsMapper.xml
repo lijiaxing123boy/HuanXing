@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.CouponGoodsMapper">
+    <select id="selectByCouponId" resultType="com.huanxing.cloud.mall.common.entity.CouponGoods">
+        SELECT coupon_goods.coupon_id,
+               coupon_goods.spu_id,
+               goods_spu.`name` as spuName,
+               goods_spu.spu_urls
+        FROM coupon_goods AS coupon_goods
+                 LEFT JOIN goods_spu AS goods_spu ON coupon_goods.spu_id = goods_spu.id
+        WHERE coupon_goods.`coupon_id` = #{couponId}
+    </select>
+</mapper>

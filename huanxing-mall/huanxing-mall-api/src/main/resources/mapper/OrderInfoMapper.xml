@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.api.mapper.OrderInfoMapper">
+    <sql id="orderSql">
+        order_info
+        .
+        id
+        ,
+        order_info.delivery_way,
+        order_info.order_no,
+        order_info.payment_type,
+        order_info.trade_type,
+        order_info.order_type,
+        order_info.remark,
+        order_info.pay_status,
+        order_info.`status`,
+        order_info.appraise_status,
+        order_info.total_price,
+        order_info.freight_price,
+        order_info.payment_price,
+        order_info.coupon_price,
+        order_info.create_time,
+        order_info.order_logistics_id
+    </sql>
+
+    <select id="selectApiPage" resultMap="resultMap">
+        SELECT
+        <include refid="orderSql"/>
+        FROM
+        order_info AS order_info
+        <where>
+            AND order_info.`del_flag` = '0'
+            <if test="query.status != null and query.status != ''">
+                AND order_info.`status` = #{query.status}
+            </if>
+            <if test="query.userId != null and query.userId != ''">
+                AND order_info.`user_id` = #{query.userId}
+            </if>
+        </where>
+    </select>
+    <select id="selectOrderById" resultMap="resultMap">
+        SELECT
+        <include refid="orderSql"/>
+        FROM
+        order_info AS order_info
+        <where>
+            AND order_info.`del_flag` = '0'
+            AND order_info.`id` = #{id}
+        </where>
+    </select>
+    <resultMap id="resultMap" type="com.huanxing.cloud.mall.common.entity.OrderInfo">
+        <collection property="orderItemList" column="{orderId=id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.OrderItem"
+                    select="com.huanxing.cloud.mall.api.mapper.OrderItemMapper.selectByOrderId"></collection>
+        <collection property="orderLogistics" column="{id=order_logistics_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.OrderLogistics"
+                    select="com.huanxing.cloud.mall.api.mapper.OrderLogisticsMapper.selectById"></collection>
+    </resultMap>
+</mapper>

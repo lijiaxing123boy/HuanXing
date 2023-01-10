@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.GoodsSkuMapper">
+    <sql id="goodsSkuSql">
+        goods_sku.id,
+        goods_sku.spu_id,
+        goods_sku.pic_url,
+        goods_sku.sales_price,
+        goods_sku.original_price,
+        goods_sku.cost_price,
+        goods_sku.stock,
+        goods_sku.`enable`,
+        goods_sku.create_time,
+        goods_sku.update_time,
+        goods_sku.create_id,
+        goods_sku.update_id,
+        goods_sku.del_flag,
+        goods_sku.first_rate,
+        goods_sku.second_rate
+    </sql>
+    <resultMap id="goodsSkuResultMap" type="com.huanxing.cloud.mall.common.entity.GoodsSku">
+        <collection property="goodsSkuSpecsValues" column="{skuId=id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSkuSpecsValue"
+                    select="com.huanxing.cloud.mall.admin.mapper.GoodsSkuSpecsValueMapper.selectBySkuId"></collection>
+    </resultMap>
+    <select id="selectBySpuId" resultMap="goodsSkuResultMap">
+        SELECT
+        <include refid="goodsSkuSql"/>
+        FROM goods_sku AS goods_sku
+        where goods_sku.`spu_id` = #{spuId}
+    </select>
+</mapper>

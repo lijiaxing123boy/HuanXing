@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>huanxing-upms</artifactId>
+        <groupId>com.huanxing</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>huanxing-upms-admin</artifactId>
+    <description>权限系统管理模块</description>
+    <dependencies>
+        <!--            安全模块-->
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-security</artifactId>
+        </dependency>
+        <!--注册中心客户端-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!--配置中心客户端-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <!--web 模块-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- druid 连接池 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+        <!--数据库-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <!--            mybatis-plus-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
+        <!--            文件存储模块-->
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-storage</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-upms-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-redis</artifactId>
+        </dependency>
+        <!--           日志模块-->
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-log</artifactId>
+        </dependency>
+        <!--           mybatis持久层框架模块-->
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-mybatis</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!--使用maven-antrun-plugin插件将jar复制到指定的目录下-->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <!-- 在maven进行package的时候执行-->
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <!--todir:是将要复制jar包到的地方,overwrite:是否重写-->
+                                <copy todir="${project.parent.parent.basedir}/${localDir}" overwrite="true">
+                                    <!--获取父目录下的target文件夹中的jar-->
+                                    <fileset dir="${project.build.directory}">
+                                        <include name="*.jar"/>
+                                    </fileset>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

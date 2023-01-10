@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.GoodsSpuMapper">
+    <resultMap id="goodsSpuMap" type="com.huanxing.cloud.mall.common.entity.GoodsSpu">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <collection property="goodsSpuSpecs" column="{spuId=id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSpecs"
+                    select="com.huanxing.cloud.mall.admin.mapper.GoodsSpuSpecsMapper.selectBySpuId"></collection>
+        <collection property="goodsSkus" column="{spuId=id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSku"
+                    select="com.huanxing.cloud.mall.admin.mapper.GoodsSkuMapper.selectBySpuId"></collection>
+    </resultMap>
+
+    <sql id="goodsSpuSql">
+        goods_spu
+        .
+        id
+        ,
+        goods_spu.`name`,
+        goods_spu.sub_title,
+        goods_spu.spu_urls,
+        goods_spu.`status`,
+        goods_spu.sales_volume,
+        goods_spu.freight_template_id,
+        goods_spu.place_shipment_id,
+        goods_spu.category_first_id,
+        goods_spu.category_second_id,
+        goods_spu.create_time,
+        goods_spu.update_time,
+        goods_spu.create_id,
+        goods_spu.update_id,
+        goods_spu.del_flag,
+        goods_spu.description,
+        goods_spu.enable_specs,
+        goods_spu.low_price,
+        goods_spu.high_price
+    </sql>
+    <select id="adminPage" resultType="com.huanxing.cloud.mall.common.entity.GoodsSpu">
+        SELECT
+        <include refid="goodsSpuSql"/>,
+        goods_category.name AS categoryName
+        FROM
+        goods_spu AS goods_spu
+        LEFT JOIN goods_category AS goods_category ON goods_spu.category_second_id = goods_category.id
+        <where>
+            AND goods_spu.`del_flag` = '0'
+            <if test="query.name != null and query.name != ''">
+                AND LOWER(goods_spu.`name`) LIKE CONCAT('%',LOWER(#{query.name}),'%')
+            </if>
+            <if test="query.status != null and query.status != ''">
+                AND goods_spu.`status` = #{query.status}
+            </if>
+        </where>
+    </select>
+    <select id="warehousePage" resultMap="goodsSpuMap">
+        SELECT
+        <include refid="goodsSpuSql"/>,
+        goods_category.name AS categoryName
+        FROM
+        goods_spu AS goods_spu
+        LEFT JOIN goods_category AS goods_category ON goods_spu.category_second_id = goods_category.id
+        <where>
+            AND goods_spu.`del_flag` = '0'
+            <if test="query.name != null and query.name != ''">
+                AND LOWER(goods_spu.`name`) LIKE CONCAT('%',LOWER(#{query.name}),'%')
+            </if>
+            <if test="query.status != null and query.status != ''">
+                AND goods_spu.`status` = #{query.status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSpuById" resultMap="goodsSpuMap">
+        SELECT
+        <include refid="goodsSpuSql"/>
+        FROM
+        goods_spu as `goods_spu`
+        WHERE goods_spu.`id` =#{id}
+    </select>
+</mapper>

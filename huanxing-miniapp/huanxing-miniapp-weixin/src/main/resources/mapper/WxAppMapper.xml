@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.miniapp.weixin.mapper.WxAppMapper">
+
+    <select id="selectByAppId" resultType="com.huanxing.cloud.miniapp.common.entity.WxApp">
+        SELECT wx_app.app_id,
+               wx_app.app_name,
+               wx_app.app_secret,
+               wx_app.mini_code_url,
+               wx_app.create_time,
+               wx_app.update_time,
+               wx_app.create_id,
+               wx_app.update_id,
+               wx_app.del_flag,
+               wx_app.token,
+               wx_app.aes_key,
+               wx_app.tenant_id
+        FROM wx_app AS wx_app
+        WHERE wx_app.app_id = #{appId}
+    </select>
+</mapper>

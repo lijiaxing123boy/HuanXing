@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.OrderLogisticsMapper">
+    <sql id="orderLogisticsSql">
+        order_logistics
+        .
+        id
+        ,
+        order_logistics.telephone,
+        order_logistics.addressee_name,
+        order_logistics.detail_address,
+        order_logistics.postal_code,
+        order_logistics.logistics_code,
+        order_logistics.logistics_name,
+        order_logistics.logistics_no,
+        order_logistics.state,
+        order_logistics.is_check,
+        order_logistics.create_time,
+        order_logistics.update_time,
+        order_logistics.create_id,
+        order_logistics.update_id,
+        order_logistics.del_flag,
+        order_logistics.logistics_desc
+    </sql>
+    <select id="selectById1" resultMap="orderLogisticsResult">
+        SELECT
+        <include refid="orderLogisticsSql"/>
+        FROM
+        order_logistics AS order_logistics
+        WHERE order_logistics.`id` = #{id}
+    </select>
+    <resultMap id="orderLogisticsResult" type="com.huanxing.cloud.mall.common.entity.OrderLogistics">
+        <collection property="orderLogisticsDetailList" column="{logisticsId=id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.OrderLogisticsDetail"
+                    select="com.huanxing.cloud.mall.admin.mapper.OrderLogisticsDetailMapper.selectByLogisticsId"></collection>
+    </resultMap>
+</mapper>

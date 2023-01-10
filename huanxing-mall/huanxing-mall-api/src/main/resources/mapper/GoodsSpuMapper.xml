@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.api.mapper.GoodsSpuMapper">
+    <resultMap id="resultMap" type="com.huanxing.cloud.mall.common.entity.GoodsSpu">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="sub_title" property="subTitle"/>
+        <result column="status" property="status"/>
+        <result column="sales_volume" property="salesVolume"/>
+        <result column="freight_template_id" property="freightTemplateId"/>
+        <result column="place_shipment_id" property="placeShipmentId"/>
+        <result column="category_first_id" property="categoryFirstId"/>
+        <result column="category_second_id" property="categorySecondId"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="resultMap2" extends="resultMap" type="com.huanxing.cloud.mall.common.entity.GoodsSpu">
+        <collection property="freightTemplate" column="{id=freight_template_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.FreightTemplate"
+                    select="com.huanxing.cloud.mall.api.mapper.FreightTemplateMapper.selectById"></collection>
+        <collection property="goodsSkus" column="{spuId=id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSku"
+                    select="com.huanxing.cloud.mall.api.mapper.GoodsSkuMapper.selectBySpuId"></collection>
+        <collection property="goodsSpuSpecs" column="{spuId=id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSpuSpecs"
+                    select="com.huanxing.cloud.mall.api.mapper.GoodsSpuSpecsMapper.selectListBySpuId2"></collection>
+        <collection property="grouponInfo" column="{spuId=id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GrouponInfo"
+                    select="com.huanxing.cloud.mall.api.mapper.GrouponInfoMapper.selectBySpuId"></collection>
+    </resultMap>
+
+
+    <resultMap id="shoppingCartResultMap" extends="resultMap" type="com.huanxing.cloud.mall.common.entity.GoodsSpu">
+        <collection property="freightTemplate" column="{id=freight_template_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.FreightTemplate"
+                    select="com.huanxing.cloud.mall.api.mapper.FreightTemplateMapper.selectById"></collection>
+    </resultMap>
+
+
+    <resultMap id="pageResultMap" extends="resultMap" type="com.huanxing.cloud.mall.common.entity.GoodsSpu">
+        <collection property="grouponInfo" column="{spuId=id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GrouponInfo"
+                    select="com.huanxing.cloud.mall.api.mapper.GrouponInfoMapper.selectBySpuId"></collection>
+    </resultMap>
+
+    <sql id="goodsSpuSql">
+        goods_spu
+        .
+        id
+        ,
+        goods_spu.`name`,
+        goods_spu.sub_title,
+        goods_spu.spu_urls,
+        goods_spu.`status`,
+        goods_spu.sales_volume,
+        goods_spu.freight_template_id,
+        goods_spu.place_shipment_id,
+        goods_spu.category_first_id,
+        goods_spu.category_second_id,
+        goods_spu.create_time,
+        goods_spu.description,
+        goods_spu.enable_specs,
+        goods_spu.low_price,
+        goods_spu.high_price
+    </sql>
+    <select id="selectApiPage" resultMap="pageResultMap">
+        SELECT
+        <include refid="goodsSpuSql"/>,
+        goods_category.name AS categoryName
+        FROM
+        goods_spu AS goods_spu
+        LEFT JOIN goods_category AS goods_category ON goods_spu.category_second_id = goods_category.id
+        <where>
+            AND goods_spu.`del_flag` = '0'
+            AND goods_spu.`status` = '1'
+            <if test="query.name != null and query.name != ''">
+                AND LOWER(goods_spu.`name`) LIKE CONCAT('%',LOWER(#{query.name}),'%')
+            </if>
+            <if test="query.categoryFirstId != null and query.categoryFirstId != ''">
+                AND goods_spu.`category_first_id` = #{query.categoryFirstId}
+            </if>
+            <if test="query.categorySecondId != null and query.categorySecondId != ''">
+                AND goods_spu.`category_second_id` = #{query.categorySecondId}
+            </if>
+        </where>
+    </select>
+    <select id="selectSpuByShoppingCart" resultMap="shoppingCartResultMap">
+        SELECT
+        <include refid="goodsSpuSql"/>
+        FROM
+        goods_spu AS goods_spu
+        where goods_spu.id = #{id}
+    </select>
+    <select id="selectSpuById" resultMap="resultMap2">
+        SELECT
+        <include refid="goodsSpuSql"/>
+        FROM
+        goods_spu AS goods_spu
+        where goods_spu.id = #{id}
+    </select>
+</mapper>

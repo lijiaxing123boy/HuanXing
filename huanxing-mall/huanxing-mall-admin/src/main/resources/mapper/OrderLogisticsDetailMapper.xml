@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.OrderLogisticsDetailMapper">
+    <sql id="orderLogisticsDetailSql">
+        order_logistics_detail.id,
+        order_logistics_detail.logistics_id,
+        order_logistics_detail.logistics_time,
+        order_logistics_detail.logistics_context,
+        order_logistics_detail.create_time,
+        order_logistics_detail.update_time,
+        order_logistics_detail.create_id,
+        order_logistics_detail.update_id,
+        order_logistics_detail.del_flag
+    </sql>
+    <select id="selectByLogisticsId" resultType="com.huanxing.cloud.mall.common.entity.OrderLogisticsDetail">
+        SELECT
+        <include refid="orderLogisticsDetailSql"/>
+        FROM
+        order_logistics_detail AS order_logistics_detail
+        WHERE order_logistics_detail.`logistics_id` = #{logisticsId}
+    </select>
+</mapper>

@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.huanxing.cloud.common.job.properties.XxlJobProperties
+

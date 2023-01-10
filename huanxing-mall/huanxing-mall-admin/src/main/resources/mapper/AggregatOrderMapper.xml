@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.AggregatOrderMapper">
+    <sql id="aggregatOrderSql">
+        aggregat_order
+        .
+        id
+        ,
+        aggregat_order.user_id,
+        aggregat_order.order_no,
+        aggregat_order.payment_type,
+        aggregat_order.remark,
+        aggregat_order.pay_status,
+        aggregat_order.`status`,
+        aggregat_order.total_price,
+        aggregat_order.payment_price,
+        aggregat_order.create_time,
+        aggregat_order.update_time,
+        aggregat_order.update_id,
+        aggregat_order.create_id,
+        aggregat_order.del_flag,
+        aggregat_order.payment_time,
+        aggregat_order.cancel_time,
+        aggregat_order.finish_time,
+        aggregat_order.transaction_id,
+        aggregat_order.refund_amount
+    </sql>
+    <select id="selectPage" resultMap="aggregatOrderMap">
+        SELECT
+        <include refid="aggregatOrderSql"/>
+        FROM
+        aggregat_order AS aggregat_order
+        <where>
+            <if test="query.paymentType !=null and query.paymentType !=''">
+                AND aggregat_order.payment_type = #{query.paymentType}
+            </if>
+            <if test="query.payStatus !=null and query.payStatus !=''">
+                AND aggregat_order.pay_status = #{query.payStatus}
+            </if>
+            <if test="query.status !=null and query.status !=''">
+                AND aggregat_order.`status` = #{query.status}
+            </if>
+            <if test="query.orderNo !=null and query.orderNo !=''">
+                AND aggregat_order.`order_no` = #{query.orderNo}
+            </if>
+        </where>
+    </select>
+    <resultMap id="aggregatOrderMap" type="com.huanxing.cloud.mall.common.entity.AggregatOrder">
+        <collection property="userInfo" column="{id=user_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.UserInfo"
+                    select="com.huanxing.cloud.mall.admin.mapper.UserInfoMapper.selectById"></collection>
+    </resultMap>
+</mapper>

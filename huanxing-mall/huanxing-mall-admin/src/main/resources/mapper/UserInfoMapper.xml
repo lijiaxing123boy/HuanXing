@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.UserInfoMapper">
+
+    <sql id="userInfoSql">
+        user_info
+        .
+        id
+        ,
+        user_info.user_number,
+        user_info.nick_name,
+        user_info.phone,
+        user_info.`password`,
+        user_info.user_grade,
+        user_info.sex,
+        user_info.avatar_url,
+        user_info.city,
+        user_info.country,
+        user_info.province,
+        user_info.del_flag,
+        user_info.create_time,
+        user_info.update_time,
+        user_info.user_source,
+        user_info.parent_id,
+        user_info.account_balance
+    </sql>
+    <resultMap id="pageResultMap" type="com.huanxing.cloud.mall.common.entity.UserInfo">
+        <collection property="parentUserInfo" column="{id=parent_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.UserInfo"
+                    select="com.huanxing.cloud.mall.admin.mapper.UserInfoMapper.selectById"></collection>
+    </resultMap>
+    <select id="selectPage" resultMap="pageResultMap">
+        SELECT
+        <include refid="userInfoSql"/>
+        FROM
+        user_info AS user_info
+        <where>
+            <if test="query.phone !=null and query.phone !=''">
+                AND user_info.`phone` = #{query.phone}
+            </if>
+            <if test="query.userGrade !=null and query.userGrade !=''">
+                AND user_info.`user_grade` = #{query.userGrade}
+            </if>
+            <if test="query.userSource !=null and query.userSource !=''">
+                AND user_info.`user_source` = #{query.userSource}
+            </if>
+        </where>
+    </select>
+    <select id="selectUserById" resultType="com.huanxing.cloud.mall.common.vo.UserInfoVO">
+        SELECT user_info.nick_name,
+               user_info.phone,
+               user_info.avatar_url
+        FROM user_info AS user_info
+        WHERE user_info.`id` = #{id}
+    </select>
+</mapper>

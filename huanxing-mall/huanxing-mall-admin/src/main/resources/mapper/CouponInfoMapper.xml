@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.CouponInfoMapper">
+    <sql id="couponInfoSql">
+        coupon_info
+        .
+        id
+        ,
+	coupon_info.coupon_name,
+	coupon_info.coupon_type,
+	coupon_info.discount,
+	coupon_info.amount,
+	coupon_info.threshold,
+	coupon_info.total_count,
+	coupon_info.assign_count,
+	coupon_info.used_count,
+	coupon_info.receive_count,
+	coupon_info.receive_started_at,
+	coupon_info.receive_ended_at,
+	coupon_info.use_range,
+	coupon_info.spu_id,
+	coupon_info.use_description,
+	coupon_info.`status`,
+	coupon_info.create_time,
+	coupon_info.update_time
+    </sql>
+
+</mapper>

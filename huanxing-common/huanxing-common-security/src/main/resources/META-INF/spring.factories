@@ -1,0 +1,7 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.huanxing.cloud.security.service.impl.HuanxingUserDetailsServiceImpl,\
+  com.huanxing.cloud.security.handler.HxGlobalExceptionHandlerResolver,\
+  com.huanxing.cloud.security.config.SaTokenConfigure,\
+  com.huanxing.cloud.security.service.impl.HxPermissionsImpl
+
+

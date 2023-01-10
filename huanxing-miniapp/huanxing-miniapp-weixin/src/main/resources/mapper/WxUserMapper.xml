@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.miniapp.weixin.mapper.WxUserMapper">
+
+    <sql id="wxUserSql">
+        wx_user
+        .
+        id
+        ,
+        wx_user.app_id,
+        wx_user.unionid,
+        wx_user.session_key,
+        wx_user.openid,
+        wx_user.create_time,
+        wx_user.update_time,
+        wx_user.create_id,
+        wx_user.update_id,
+        wx_user.del_flag,
+        wx_user.nick_name,
+        wx_user.avatar_url,
+        wx_user.phone,
+        wx_user.mall_user_id
+    </sql>
+    <select id="selectAdminPage" resultType="com.huanxing.cloud.miniapp.common.vo.WxUserVo">
+        SELECT
+        <include refid="wxUserSql"/>
+        FROM
+        wx_user AS wx_user
+        <where>
+            <if test="query.appId != null and query.appId !=''">
+                AND wx_user.`app_id` = #{query.appId}
+            </if>
+            <if test="query.phone != null and query.phone !=''">
+                AND wx_user.`phone` = #{query.phone}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.LootStageMapper">
+    <sql id="lootStageSql">
+        loot_stage
+        .
+        id
+        ,
+        loot_stage.loot_id,
+        loot_stage.open_prize,
+        loot_stage.number_code,
+        loot_stage.create_time,
+        loot_stage.update_time,
+        loot_stage.update_id,
+        loot_stage.create_id,
+        loot_stage.del_flag
+    </sql>
+</mapper>

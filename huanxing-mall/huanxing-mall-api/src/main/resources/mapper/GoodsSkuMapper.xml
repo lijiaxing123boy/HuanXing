@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.api.mapper.GoodsSkuMapper">
+    <sql id="goodsSkuSql">
+        goods_sku
+        .
+        id
+        ,
+        goods_sku.spu_id,
+        goods_sku.pic_url,
+        goods_sku.sales_price,
+        goods_sku.original_price,
+        goods_sku.cost_price,
+        goods_sku.stock,
+        goods_sku.`enable`,
+        goods_sku.create_time,
+        goods_sku.update_time,
+        goods_sku.create_id,
+        goods_sku.update_id,
+        goods_sku.del_flag,
+        goods_sku.first_rate,
+        goods_sku.second_rate
+    </sql>
+    <resultMap id="goodsSkuResultMap" type="com.huanxing.cloud.mall.common.entity.GoodsSku">
+        <collection property="goodsSkuSpecsValues" column="{skuId=id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSkuSpecsValue"
+                    select="com.huanxing.cloud.mall.api.mapper.GoodsSkuSpecsValueMapper.selectBySkuId"></collection>
+        <collection property="grouponPrice" column="{skuId=id}"
+                    ofType="java.math.BigDecimal"
+                    select="com.huanxing.cloud.mall.api.mapper.GrouponSkuMapper.selectBySkuId"></collection>
+    </resultMap>
+    <select id="selectBySpuId" resultMap="goodsSkuResultMap">
+        SELECT
+        <include refid="goodsSkuSql"/>
+        FROM goods_sku AS goods_sku
+        where goods_sku.`spu_id` = #{spuId}
+    </select>
+    <select id="selectSkuByShoppingCart" resultMap="goodsSkuResultMap">
+        SELECT
+        <include refid="goodsSkuSql"/>
+        FROM goods_sku AS goods_sku
+        <where>
+            AND goods_sku.`enable` = '1'
+            AND goods_sku.`id` = #{id}
+        </where>
+    </select>
+    <select id="selectPlaceOrderSku" resultMap="placeOrderSkuResultMap">
+        SELECT
+        <include refid="goodsSkuSql"/>
+        FROM
+        goods_sku AS goods_sku
+        WHERE
+        goods_sku.`enable` = '1'
+        AND goods_sku.id IN
+        <foreach item="item" collection="query.placeOrderSkus" separator="," open="(" close=")" index="">
+            #{item.skuId}
+        </foreach>
+    </select>
+    <resultMap id="placeOrderSkuResultMap" type="com.huanxing.cloud.mall.common.entity.GoodsSku">
+        <collection property="goodsSpu" column="{id=spu_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSpu"
+                    select="com.huanxing.cloud.mall.api.mapper.GoodsSpuMapper.selectById"></collection>
+
+    </resultMap>
+</mapper>

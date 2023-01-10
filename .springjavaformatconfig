@@ -1,0 +1,2 @@
+# 默认情况下，格式化程序需要 Java 11
+java-baseline=8

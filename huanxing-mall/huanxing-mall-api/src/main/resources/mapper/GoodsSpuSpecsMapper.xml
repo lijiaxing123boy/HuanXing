@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.api.mapper.GoodsSpuSpecsMapper">
+    <sql id="goodsSpuSpecsSql">
+        goods_spu_specs
+        .
+        id
+        ,
+            goods_spu_specs.specs_id,
+            goods_spu_specs.spu_id,
+            goods_spu_specs.sort,
+            goods_spu_specs.create_time,
+            goods_spu_specs.update_time,
+            goods_spu_specs.create_id,
+            goods_spu_specs.update_id,
+            goods_spu_specs.del_flag,
+            goods_specs.`name` AS specsName
+    </sql>
+    <resultMap id="goodsSpuSpecsResultMap" type="com.huanxing.cloud.mall.common.entity.GoodsSpuSpecs">
+        <collection property="goodsSkuSpecsValues" column="{spuId=spu_id,specsId=specs_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSpecs"
+                    select="com.huanxing.cloud.mall.api.mapper.GoodsSkuSpecsValueMapper.selectGoodsSkuSpecsValues"></collection>
+    </resultMap>
+    <select id="selectBySpuId" resultType="com.huanxing.cloud.mall.common.entity.GoodsSpuSpecs">
+        SELECT
+        <include refid="goodsSpuSpecsSql"/>
+        FROM goods_spu_specs AS goods_spu_specs
+        LEFT JOIN goods_specs AS goods_specs
+        ON goods_spu_specs.`specs_id` = goods_specs.`id`
+        where goods_spu_specs.`spu_id` = #{spuId}
+        order by goods_spu_specs.`sort` asc
+    </select>
+    <select id="selectListBySpuId" resultMap="goodsSpuSpecsResultMap">
+        SELECT
+        <include refid="goodsSpuSpecsSql"/>
+        FROM goods_spu_specs AS goods_spu_specs
+        LEFT JOIN goods_specs AS goods_specs
+        ON goods_spu_specs.`specs_id` = goods_specs.`id`
+        where goods_spu_specs.`spu_id` = #{query.spuId}
+        order by goods_spu_specs.`sort` asc
+    </select>
+    <select id="selectListBySpuId2" resultMap="goodsSpuSpecsResultMap">
+        SELECT
+        <include refid="goodsSpuSpecsSql"/>
+        FROM goods_spu_specs AS goods_spu_specs
+        LEFT JOIN goods_specs AS goods_specs
+        ON goods_spu_specs.`specs_id` = goods_specs.`id`
+        where goods_spu_specs.`spu_id` = #{spuId}
+        order by goods_spu_specs.`sort` asc
+    </select>
+</mapper>

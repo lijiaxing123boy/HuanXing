@@ -1,0 +1,7 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.huanxing.cloud.common.myabtis.config.MybatisPlusConfig,\
+   com.huanxing.cloud.common.myabtis.handler.ListStringTypeHandler,\
+     com.huanxing.cloud.common.myabtis.handler.JsonObjTypeHandler,\
+   com.huanxing.cloud.common.myabtis.config.HxWebMvcConfigurer,\
+com.huanxing.cloud.common.myabtis.properties.TenantConfigProperties,\
+  com.huanxing.cloud.common.myabtis.tenant.HxTenantContextFilter

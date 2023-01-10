@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.api.mapper.OrderItemMapper">
+    <sql id="orderItemSql">
+        order_item
+        .
+        id
+        ,
+        order_item.order_id,
+        order_item.spu_id,
+        order_item.sku_id,
+        order_item.spu_name,
+        order_item.pic_url,
+        order_item.sales_price,
+        order_item.buy_quantity,
+        order_item.total_price,
+        order_item.freight_price,
+        order_item.coupon_price,
+        order_item.payment_price,
+        order_item.create_time,
+        order_item.update_time,
+        order_item.update_id,
+        order_item.create_id,
+        order_item.`status`,
+        order_item.del_flag,
+        order_item.specs_info
+    </sql>
+    <resultMap id="orderItemResultMap" type="com.huanxing.cloud.mall.common.entity.OrderItem">
+        <collection property="orderRefund" column="{orderItemId=id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.OrderRefund"
+                    select="com.huanxing.cloud.mall.api.mapper.OrderRefundMapper.selectByOrderItemId"></collection>
+    </resultMap>
+    <select id="selectByOrderId" resultType="com.huanxing.cloud.mall.common.entity.OrderItem">
+        SELECT
+        <include refid="orderItemSql"/>
+        FROM
+        order_item AS order_item
+        <where>
+            AND order_item.`del_flag` = '0'
+            AND order_item.`order_id` = #{orderId}
+        </where>
+    </select>
+    <select id="selectOrderItemById" resultMap="orderItemResultMap">
+        SELECT
+        <include refid="orderItemSql"/>
+        FROM
+        order_item AS order_item
+        WHERE order_item.`id` = #{id}
+    </select>
+</mapper>

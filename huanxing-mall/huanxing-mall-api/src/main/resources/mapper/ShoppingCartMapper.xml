@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.api.mapper.ShoppingCartMapper">
+
+
+    <sql id="shoppingCartSql">
+        shopping_cart
+        .
+        `id`
+        ,
+        shopping_cart.`user_id`,
+        shopping_cart.`spu_id`,
+        shopping_cart.`sku_id`,
+        shopping_cart.`quantity`,
+        shopping_cart.`spu_name`,
+        shopping_cart.`sales_price`,
+        shopping_cart.`pic_url`,
+        shopping_cart.`create_time`,
+        shopping_cart.`update_time`,
+        shopping_cart.`create_id`,
+        shopping_cart.`update_id`,
+        shopping_cart.`del_flag`,
+        shopping_cart.`specs_info`
+    </sql>
+    <resultMap id="shoppingCartMap" type="com.huanxing.cloud.mall.common.entity.ShoppingCart">
+        <collection property="goodsSpu" column="{id=spu_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSpu"
+                    select="com.huanxing.cloud.mall.api.mapper.GoodsSpuMapper.selectSpuByShoppingCart"/>
+        <collection property="goodsSku" column="{id=sku_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSku"
+                    select="com.huanxing.cloud.mall.api.mapper.GoodsSkuMapper.selectSkuByShoppingCart"/>
+        <collection property="goodsSpuSpecs" column="{spuId=spu_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSpuSpecs"
+                    select="com.huanxing.cloud.mall.api.mapper.GoodsSpuSpecsMapper.selectBySpuId"/>
+    </resultMap>
+    <select id="selectApiPage" resultMap="shoppingCartMap">
+        SELECT
+        <include refid="shoppingCartSql"/>
+        FROM
+        shopping_cart AS shopping_cart
+        <where>
+            AND shopping_cart.`user_id` =#{query.userId}
+        </where>
+    </select>
+</mapper>

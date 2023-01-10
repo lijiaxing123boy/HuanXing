@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>huanxing-upms</artifactId>
+        <groupId>com.huanxing</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>huanxing-upms-common</artifactId>
+    <description>权限系统公共模块</description>
+    <dependencies>
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-core</artifactId>
+        </dependency>
+        <!--mybatis plus extension-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-extension</artifactId>
+        </dependency>
+        <!--			 https://mvnrepository.com/artifact/com.github.oshi/oshi-core -->
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+        </dependency>
+        <!--           feign模块-->
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-feign</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

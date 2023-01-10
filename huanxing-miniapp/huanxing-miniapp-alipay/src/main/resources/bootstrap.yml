@@ -1,0 +1,17 @@
+server:
+  port: 8221
+
+spring:
+  application:
+    name: huanxing-miniapp-alipay
+  cloud:
+    nacos:
+      discovery:
+        server-addr: huanxing-nacos:8848
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        file-extension: yml
+        shared-configs:
+          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+  profiles:
+    active: dev

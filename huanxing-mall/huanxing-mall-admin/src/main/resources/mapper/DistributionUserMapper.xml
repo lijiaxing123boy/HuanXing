@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.DistributionUserMapper">
+
+    <sql id="distributionUseSql">
+        distribution_user.user_id,
+        distribution_user.total_amount,
+        distribution_user.total_withdrawal,
+        distribution_user.create_time,
+        distribution_user.update_time,
+        distribution_user.create_id,
+        distribution_user.update_id,
+        distribution_user.del_flag
+    </sql>
+    <resultMap id="pageResultMap" type="com.huanxing.cloud.mall.common.entity.DistributionUser">
+        <collection property="userInfo" column="{id=user_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.UserInfo"
+                    select="com.huanxing.cloud.mall.admin.mapper.UserInfoMapper.selectById"></collection>
+        <collection property="frozenAmount" column="{userId=user_id}"
+                    select="com.huanxing.cloud.mall.admin.mapper.DistributionOrderMapper.selectFrozenAmount"></collection>
+    </resultMap>
+    <select id="selectPage" resultMap="pageResultMap">
+        SELECT
+       <include refid="distributionUseSql" />
+        FROM distribution_user AS distribution_user
+    </select>
+</mapper>

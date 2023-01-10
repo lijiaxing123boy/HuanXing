@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.CouponUserMapper">
+    <sql id="couponUserSql">
+        coupon_user
+        .
+        id
+        ,
+	coupon_user.coupon_id,
+	coupon_user.user_id,
+	coupon_user.`status`,
+	coupon_user.order_id,
+	coupon_user.received_time,
+	coupon_user.validat_time,
+	coupon_user.used_time,
+	coupon_user.create_time,
+	coupon_user.update_time
+    </sql>
+    <select id="selectPage" resultMap="pageResultMap">
+        SELECT
+        <include refid="couponUserSql"/>,
+        coupon_info.coupon_name
+        FROM
+        coupon_user AS coupon_user
+        LEFT JOIN coupon_info AS coupon_info ON coupon_user.coupon_id = coupon_info.id
+        <where>
+            <if test="query.status !=null and query.status !=''">
+                AND coupon_user.`status`=#{query.status}
+            </if>
+        </where>
+    </select>
+    <resultMap id="pageResultMap" type="com.huanxing.cloud.mall.common.entity.CouponUser">
+        <collection property="userInfoVO" column="{id=user_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.UserInfo"
+                    select="com.huanxing.cloud.mall.admin.mapper.UserInfoMapper.selectUserById"></collection>
+    </resultMap>
+</mapper>

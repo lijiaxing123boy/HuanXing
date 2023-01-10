@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.huanxing.cloud.mall.common.properties.MallConfigProperties

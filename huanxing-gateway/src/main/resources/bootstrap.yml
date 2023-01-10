@@ -1,0 +1,29 @@
+server:
+  port: 9999
+
+spring:
+  application:
+    name: huanxing-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: huanxing-nacos:8848
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        file-extension: yml
+        shared-configs:
+          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+    sentinel:
+      # 服务启动直接建立心跳连接
+      eager: true
+      transport:
+        dashboard: localhost:8080
+        port: 8719
+  profiles:
+    active: dev
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"   #暴露路由的规则端点  /actuator/gateway/routes
+

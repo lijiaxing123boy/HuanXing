@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>huanxing-common</artifactId>
+        <groupId>com.huanxing</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <description>文件存储服务</description>
+    <artifactId>huanxing-common-storage</artifactId>
+    <packaging>jar</packaging>
+    <dependencies>
+        <!--common-->
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-upms-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+        </dependency>
+        <!--            阿里云 oss-->
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+        </dependency>
+    </dependencies>
+</project>

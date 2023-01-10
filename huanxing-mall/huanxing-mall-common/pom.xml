@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>huanxing-mall</artifactId>
+        <groupId>com.huanxing</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>huanxing-mall-common</artifactId>
+    <description>商城公共模块</description>
+    <dependencies>
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-mybatis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-miniapp-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-pay-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-upms-common</artifactId>
+        </dependency>
+        <!--           job模块-->
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-job</artifactId>
+        </dependency>
+        <!--           feign模块-->
+        <dependency>
+            <groupId>com.huanxing</groupId>
+            <artifactId>huanxing-common-feign</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

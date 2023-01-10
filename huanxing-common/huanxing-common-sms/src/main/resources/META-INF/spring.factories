@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.huanxing.cloud.common.sms.properties.AliSmsProperties,\
+  com.huanxing.cloud.common.sms.util.AliSmsUtils

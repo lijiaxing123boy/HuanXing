@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.admin.mapper.DistributionOrderMapper">
+
+    <sql id="distributionOrderSql">
+        distribution_order
+        .
+        id
+        ,
+        distribution_order.distribution_user_id,
+        distribution_order.distribution_level,
+        distribution_order.user_id,
+        distribution_order.order_id,
+        distribution_order.total_amount,
+        distribution_order.`status`,
+        distribution_order.create_time,
+        distribution_order.update_time,
+        distribution_order.create_id,
+        distribution_order.update_id,
+        distribution_order.del_flag
+    </sql>
+    <resultMap id="resultMapPage" type="com.huanxing.cloud.mall.common.entity.DistributionOrder">
+        <collection property="userInfo" column="{id=user_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.UserInfo"
+                    select="com.huanxing.cloud.mall.admin.mapper.UserInfoMapper.selectById"></collection>
+        <collection property="distributionUserInfo" column="{id=distribution_user_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.UserInfo"
+                    select="com.huanxing.cloud.mall.admin.mapper.UserInfoMapper.selectById"></collection>
+        <collection property="orderInfo" column="{id=order_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.OrderInfo"
+                    select="com.huanxing.cloud.mall.admin.mapper.OrderInfoMapper.selectById"></collection>
+    </resultMap>
+    <select id="selectPage" resultMap="resultMapPage">
+        SELECT
+        <include refid="distributionOrderSql"/>
+        FROM distribution_order AS distribution_order
+        <where>
+            <if test="query.distributionUserId !=null and query.distributionUserId !=''">
+                AND distribution_order.`distribution_user_id` = #{query.distributionUserId}
+            </if>
+        </where>
+    </select>
+    <select id="selectFrozenAmount" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(distribution_order.total_amount), 0)
+        FROM distribution_order AS distribution_order
+        where distribution_order.`distribution_user_id` = #{userId}
+          AND distribution_order.`status` = '1'
+    </select>
+</mapper>

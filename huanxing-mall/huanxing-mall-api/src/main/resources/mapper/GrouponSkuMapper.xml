@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.api.mapper.GrouponSkuMapper">
+    <sql id="grouponSkuSql">
+        groupon_sku
+        .
+        id
+        ,
+        groupon_sku.groupon_id,
+        groupon_sku.sku_id,
+        groupon_sku.groupon_price,
+        groupon_sku.create_time,
+        groupon_sku.update_time,
+        groupon_sku.create_id,
+        groupon_sku.update_id
+    </sql>
+    <select id="selectByGrouponId" resultMap="grouponSkuResultMap">
+        SELECT
+        <include refid="grouponSkuSql"/>,
+        goods_sku.sales_price,
+        goods_sku.stock
+        FROM
+        groupon_sku AS groupon_sku
+        LEFT JOIN goods_sku AS goods_sku
+        ON groupon_sku.sku_id = goods_sku.id
+        WHERE groupon_sku.`groupon_id` = #{grouponId}
+    </select>
+    <select id="selectBySkuId" resultType="java.math.BigDecimal">
+        SELECT groupon_sku.groupon_price
+        FROM groupon_sku AS groupon_sku
+        WHERE groupon_sku.`sku_id` = #{skuId}
+    </select>
+    <resultMap id="grouponSkuResultMap" type="com.huanxing.cloud.mall.common.entity.GrouponSku">
+        <collection property="goodsSkuSpecsValues" column="{skuId=sku_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.GoodsSkuSpecsValue"
+                    select="com.huanxing.cloud.mall.api.mapper.GoodsSkuSpecsValueMapper.selectBySkuId"></collection>
+    </resultMap>
+</mapper>

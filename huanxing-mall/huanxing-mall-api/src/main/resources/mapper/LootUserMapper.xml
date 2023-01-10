@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.api.mapper.LootUserMapper">
+    <select id="selectCountByLootStageId" resultType="java.lang.Integer">
+        SELECT IFNULL(COUNT(1), 0)
+        FROM loot_user AS loot_user
+        WHERE loot_user.`loot_stage_id` = #{lootStageId}
+    </select>
+    <select id="selectJoinedAvatars" resultType="java.lang.String">
+        SELECT
+        user_info.avatar_url
+        FROM
+        loot_user AS loot_user,
+        user_info AS user_info
+        <where>
+            loot_user.user_id = user_info.id
+            AND loot_user.`loot_id` = #{lootId}
+        </where>
+        ORDER BY loot_user.`create_time` DESC
+        LIMIT 10
+    </select>
+</mapper>

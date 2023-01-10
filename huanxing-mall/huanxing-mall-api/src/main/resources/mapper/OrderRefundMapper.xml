@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.api.mapper.OrderRefundMapper">
+
+    <sql id="orderRefundSql">
+        order_refund
+        .
+        id
+        ,
+        order_refund.order_id,
+        order_refund.order_item_id,
+        order_refund.`status`,
+        order_refund.arrival_status,
+        order_refund.create_time,
+        order_refund.update_time,
+        order_refund.update_id,
+        order_refund.create_id,
+        order_refund.del_flag,
+        order_refund.refund_amount,
+        order_refund.refund_trade_no,
+        order_refund.refund_reason,
+        order_refund.refuse_reason,
+        order_refund.user_received_account,
+        order_refund.refund_id
+    </sql>
+    <resultMap id="orderRefundMap" type="com.huanxing.cloud.mall.common.entity.OrderRefund">
+        <collection property="orderItem" column="{id=order_item_id}"
+                    ofType="com.huanxing.cloud.mall.common.entity.OrderItem"
+                    select="com.huanxing.cloud.mall.api.mapper.OrderItemMapper.selectById"></collection>
+    </resultMap>
+    <select id="selectByOrderItemId" resultType="com.huanxing.cloud.mall.common.entity.OrderRefund">
+        SELECT
+        <include refid="orderRefundSql"/>
+        FROM
+        order_refund AS `order_refund`
+        WHERE `order_refund`.`order_item_id`= #{orderItemId}
+        ORDER BY `order_refund`.`create_time` DESC
+        LIMIT 1
+    </select>
+    <select id="selectPage" resultMap="orderRefundMap">
+        SELECT
+        <include refid="orderRefundSql"/>
+        FROM
+        order_refund AS `order_refund`
+        <where>
+            <if test="query.userId != null and query.userId != ''">
+                AND `order_refund`.`user_id` = #{query.userId}
+            </if>
+        </where>
+
+    </select>
+    <select id="selectRefundById" resultMap="orderRefundMap">
+        SELECT
+        <include refid="orderRefundSql"/>
+        FROM
+        order_refund AS `order_refund`
+        WHERE order_refund.`id` = #{id}
+    </select>
+</mapper>

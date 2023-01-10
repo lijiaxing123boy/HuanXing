@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huanxing.cloud.mall.api.mapper.UserInfoMapper">
+
+    <sql id="userInfoSql">
+        user_info.id,
+        user_info.user_number,
+        user_info.nick_name,
+        user_info.phone,
+        user_info.`password`,
+        user_info.user_grade,
+        user_info.sex,
+        user_info.account_balance,
+        user_info.user_source,
+        user_info.parent_id,
+        user_info.update_time,
+        user_info.create_time,
+        user_info.province,
+        user_info.del_flag,
+        user_info.country,
+        user_info.city,
+        user_info.avatar_url
+    </sql>
+    <select id="selectPage" resultType="com.huanxing.cloud.mall.common.entity.UserInfo">
+        SELECT
+        <include refid="userInfoSql"/>
+        FROM user_info AS user_info
+        <where>
+            <if test="query.parentId != null">
+                AND user_info.`parent_id` = #{query.parentId}
+            </if>
+            <if test="query.secondParentId != null">
+                AND user_info.`parent_id` IN (SELECT parent_user.`id` FROM `user_info` as parent_user WHERE
+                parent_user.`parent_id` = #{query.secondParentId})
+            </if>
+        </where>
+    </select>
+</mapper>
