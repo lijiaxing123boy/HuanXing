@@ -3,6 +3,7 @@ package com.huanxing.cloud.mall.api.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.huanxing.cloud.common.core.entity.Result;
 import com.huanxing.cloud.mall.common.dto.PlaceOrderDTO;
 import com.huanxing.cloud.mall.common.entity.OrderInfo;
 
@@ -74,5 +75,15 @@ public interface IOrderInfoService extends IService<OrderInfo> {
 	 * @return: boolean
 	 */
 	boolean receiveOrder(OrderInfo orderInfo);
+
+	/**
+	 * 预支付(调用统一下单接口)
+	 *
+	 * @author lijx
+	 * @date 2022/6/11
+	 * @param orderInfo
+	 * @return: com.huanxing.cloud.mall.common.entity.OrderInfo
+	 */
+	Result unifiedOrder(OrderInfo orderInfo);
 
 }

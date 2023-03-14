@@ -2,7 +2,7 @@ package com.huanxing.cloud.miniapp.weixin.controller;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import com.huanxing.cloud.common.core.entity.Result;
-import com.huanxing.cloud.miniapp.common.vo.WxQrCodeVO;
+import com.huanxing.cloud.miniapp.common.dto.WxQrCodeDTO;
 import com.huanxing.cloud.miniapp.weixin.config.WxMaConfiguration;
 import com.huanxing.cloud.security.annotation.HxInner;
 import io.swagger.annotations.Api;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sun.misc.BASE64Encoder;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Base64;
 
 /**
  * 微信小程序码
@@ -34,22 +34,18 @@ public class WxQrCodeController {
 	@HxInner
 	@ApiOperation(value = "获取微信小程序码")
 	@PostMapping("/inner/unlimit")
-	public Result createWxaCodeUnlimit(@RequestBody WxQrCodeVO wxQrCodeVO) {
-		final WxMaService wxService = WxMaConfiguration.getMaService(wxQrCodeVO.getAppId());
+	public Result createWxaCodeUnlimit(@RequestBody WxQrCodeDTO wxQrCodeDTO) {
+		final WxMaService wxService = WxMaConfiguration.getMaService(wxQrCodeDTO.getAppId());
 
 		try {
-			File file = wxService.getQrcodeService().createWxaCodeUnlimit(wxQrCodeVO.getScene(), wxQrCodeVO.getPage(),
-					true, wxQrCodeVO.getEnvVersion(), 120, false, null, false);
+			File file = wxService.getQrcodeService().createWxaCodeUnlimit(wxQrCodeDTO.getScene(), wxQrCodeDTO.getPage(),
+					true, wxQrCodeDTO.getEnvVersion(), 120, false, null, false);
 			FileInputStream fileInputStream = new FileInputStream(file);
-			// 给 byte 预留的空间
-			byte[] bytes = new byte[fileInputStream.available()];
-			// 读取到 byte 里面
-			fileInputStream.read(bytes);
+			byte[] buffer = new byte[(int) file.length()];
+			fileInputStream.read(buffer);
 			fileInputStream.close();
-			BASE64Encoder base64Encoder = new BASE64Encoder();
-			// 得到文件 之后转成beye 然后使用base64转码
-			String encode = base64Encoder.encode(bytes);
-			return Result.success(encode);
+			String rsEncode = new String(Base64.getEncoder().encode(buffer));
+			return Result.success(rsEncode);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

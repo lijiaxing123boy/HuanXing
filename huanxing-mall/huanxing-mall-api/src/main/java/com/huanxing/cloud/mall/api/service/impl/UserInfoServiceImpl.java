@@ -10,9 +10,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.huanxing.cloud.common.core.constant.CacheConstants;
 import com.huanxing.cloud.common.core.constant.SecurityConstants;
+import com.huanxing.cloud.common.core.desensitization.MobilePhoneDesensitization;
 import com.huanxing.cloud.common.core.entity.Result;
 import com.huanxing.cloud.common.core.util.IpUtils;
-import com.huanxing.cloud.common.core.util.SensitiveUtils;
 import com.huanxing.cloud.common.myabtis.tenant.HxTenantContextHolder;
 import com.huanxing.cloud.mall.api.mapper.UserInfoMapper;
 import com.huanxing.cloud.mall.api.service.IDistributionUserService;
@@ -64,6 +64,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
 	private final FeignWxAppService feignWxAppService;
 
+	private final MobilePhoneDesensitization mobilePhoneDesensitization = new MobilePhoneDesensitization();
+
 	@Override
 	public boolean checkPhone(String phone) {
 		if (StrUtil.isBlank(phone)) {
@@ -114,13 +116,14 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 	}
 
 	@Override
-	public UserInfo maPhoneLogin(HxTokenInfo hxTokenInfo, String key, String phoneNumber, String shareUserNumber) {
+	public UserInfo maPhoneLogin(HxTokenInfo hxTokenInfo, String key, String phoneNumber, Integer shareUserNumber) {
 		UserInfo userInfo = super.getOne(Wrappers.<UserInfo>lambdaQuery().eq(UserInfo::getPhone, phoneNumber));
 		if (ObjectUtil.isNull(userInfo)) {
 			userInfo = new UserInfo();
 			userInfo.setUserGrade(MallUserConstants.USER_GRADE_0);
 			userInfo.setAvatarUrl(MallUserConstants.DEFAULT_AVATAR_URL);
 			userInfo.setUserSource(hxTokenInfo.getClientType());
+			userInfo.setAccountBalance(BigDecimal.ZERO);
 		}
 		Result<WxUser> wxUserResult = feignWxUserService.getById(hxTokenInfo.getWxUserId(),
 				SecurityConstants.SOURCE_IN);
@@ -157,7 +160,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 	@Override
 	public void saveOrUpdateUser(UserInfo userInfo) {
 		if (StrUtil.isBlank(userInfo.getNickName())) {
-			userInfo.setNickName(SensitiveUtils.mobilePhone(userInfo.getPhone()));
+			userInfo.setNickName(mobilePhoneDesensitization.serialize(userInfo.getPhone()));
 		}
 		if (StrUtil.isBlank(userInfo.getAvatarUrl())) {
 			userInfo.setAvatarUrl(MallUserConstants.DEFAULT_AVATAR_URL);
@@ -274,7 +277,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
 	@Override
 	public IPage<UserInfo> getPage(Page page, UserInfoDTO userInfoDTO) {
-		return baseMapper.selectPage(page, userInfoDTO);
+		return baseMapper.selectUserPage(page, userInfoDTO);
 	}
 
 	@Override

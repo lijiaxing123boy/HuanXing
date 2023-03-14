@@ -5,8 +5,8 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.huanxing.cloud.common.core.constant.CommonConstants;
+import com.huanxing.cloud.common.core.desensitization.KeyDesensitization;
 import com.huanxing.cloud.common.core.entity.Result;
-import com.huanxing.cloud.common.core.util.SensitiveUtils;
 import com.huanxing.cloud.common.log.annotation.SysLog;
 import com.huanxing.cloud.security.annotation.HxInner;
 import com.huanxing.cloud.upms.admin.service.ISysStorageConfigService;
@@ -32,6 +32,8 @@ public class SysStorageConfigController {
 
 	private final ISysStorageConfigService sysStorageConfigService;
 
+	private final KeyDesensitization keyDesensitization = new KeyDesensitization();
+
 	@ApiOperation(value = "查询文件存储配置")
 	@SaCheckPermission("upms:storageconfig:get")
 	@GetMapping
@@ -42,8 +44,8 @@ public class SysStorageConfigController {
 			sysStorageConfig.setType(CommonConstants.STORAGE_TYPE_1);
 			sysStorageConfigService.save(sysStorageConfig);
 		}
-		sysStorageConfig.setAccessKey(SensitiveUtils.currency(sysStorageConfig.getAccessKey()));
-		sysStorageConfig.setAccessSecret(SensitiveUtils.currency(sysStorageConfig.getAccessSecret()));
+		sysStorageConfig.setAccessKey(keyDesensitization.serialize(sysStorageConfig.getAccessKey()));
+		sysStorageConfig.setAccessSecret(keyDesensitization.serialize(sysStorageConfig.getAccessSecret()));
 		return Result.success(sysStorageConfig);
 	}
 
@@ -64,17 +66,15 @@ public class SysStorageConfigController {
 			return Result.fail("文件存储配置主键为空");
 		}
 		SysStorageConfig target = sysStorageConfigService.getById(id);
-		target.setType(sysStorageConfig.getType());
-		target.setBucket(sysStorageConfig.getBucket());
-		target.setEndpoint(sysStorageConfig.getEndpoint());
-		if (!SensitiveUtils.currency(target.getAccessKey()).equals(sysStorageConfig.getAccessKey())) {
-			target.setAccessKey(sysStorageConfig.getAccessKey());
+
+		if (keyDesensitization.serialize(target.getAccessKey()).equals(sysStorageConfig.getAccessKey())) {
+			sysStorageConfig.setAccessKey(null);
 		}
-		if (!SensitiveUtils.currency(target.getAccessSecret()).equals(sysStorageConfig.getAccessSecret())) {
-			target.setAccessSecret(sysStorageConfig.getAccessSecret());
+		if (keyDesensitization.serialize(target.getAccessSecret()).equals(sysStorageConfig.getAccessSecret())) {
+			sysStorageConfig.setAccessSecret(null);
 		}
 
-		return Result.success(sysStorageConfigService.updateById(target));
+		return Result.success(sysStorageConfigService.updateById(sysStorageConfig));
 	}
 
 }

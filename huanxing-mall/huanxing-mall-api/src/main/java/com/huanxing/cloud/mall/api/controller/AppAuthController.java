@@ -1,13 +1,9 @@
 package com.huanxing.cloud.mall.api.controller;
 
-import cn.hutool.json.JSONUtil;
-import com.huanxing.cloud.common.core.constant.CacheConstants;
 import com.huanxing.cloud.common.core.entity.Result;
-import com.huanxing.cloud.common.core.util.SnowflakeIdUtils;
 import com.huanxing.cloud.mall.api.service.IUserInfoService;
 import com.huanxing.cloud.mall.api.utils.HxTokenHolder;
 import com.huanxing.cloud.mall.common.constant.MallCommonConstants;
-import com.huanxing.cloud.mall.common.dto.AppAuthDTO;
 import com.huanxing.cloud.mall.common.dto.HxTokenInfo;
 import com.huanxing.cloud.mall.common.entity.UserInfo;
 import com.huanxing.cloud.mall.common.enums.ClientTypeEnum;
@@ -21,8 +17,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 商城应用授权
@@ -57,47 +51,6 @@ public class AppAuthController {
 		aliUserDTO.setAppId(appId);
 		aliUserDTO.setClientType(ClientTypeEnum.ALI_MA.getCode());
 		return Result.success(userInfoService.aliMaLogin(aliUserDTO));
-	}
-
-	/**
-	 * 商城前端版本都更新后删除
-	 *
-	 * @author lijx
-	 * @date 2022/9/6
-	 */
-	@Deprecated
-	@ApiOperation(value = "商城用户应用授权")
-	@PostMapping("/user/auth")
-	public Result wxMaLogin(HttpServletRequest request, @RequestBody AppAuthDTO appAuthDTO) {
-		UserInfo userInfo;
-		String clientType = request.getHeader(MallCommonConstants.HEADER_CLIENT_TYPE);
-		if (ClientTypeEnum.WX_MA.getCode().equals(clientType)) {
-			// 小程序应用授权
-			WxUserDTO wxUserDTO = appAuthDTO.getWxUserDTO();
-			String appId = request.getHeader(MallCommonConstants.HEADER_APP_ID);
-			wxUserDTO.setAppId(appId);
-			wxUserDTO.setClientType(ClientTypeEnum.WX_MA.getCode());
-			userInfo = userInfoService.wxMaLogin(wxUserDTO);
-		}
-		else if (ClientTypeEnum.ALI_MA.getCode().equals(clientType)) {
-			String appId = request.getHeader(MallCommonConstants.HEADER_APP_ID);
-			AliUserDTO aliUserDTO = appAuthDTO.getAliUserDTO();
-			aliUserDTO.setAppId(appId);
-			aliUserDTO.setClientType(ClientTypeEnum.ALI_MA.getCode());
-			userInfo = userInfoService.aliMaLogin(aliUserDTO);
-		}
-		else {
-			userInfo = new UserInfo();
-			String token = UUID.randomUUID().toString();
-			// 将token和用户信息存入redis，并设置过期时间
-			String key = CacheConstants.MALL_USER_TOKEN + token;
-			HxTokenInfo hxTokenInfo = new HxTokenInfo();
-			hxTokenInfo.setClientType(request.getHeader(MallCommonConstants.HEADER_CLIENT_TYPE));
-			redisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(hxTokenInfo), CacheConstants.TOKEN_TIME,
-					TimeUnit.HOURS);
-			userInfo.setHxToken(token);
-		}
-		return Result.success(userInfo);
 	}
 
 	/**

@@ -20,11 +20,8 @@ public class CacheConstants {
 	/** 商城用户token过期时间 */
 	public static final long TOKEN_TIME = 120;
 
-	/** 待支付订单 */
-	public static final String MALL_CACHE_ORDER_STATUS_1 = "mall:order:status_1:";
-
 	/** 待收货订单 */
-	public static final String MALL_CACHE_ORDER_STATUS_3 = "mall:order:status_3:";
+	public static final String MALL_CACHE_ORDER_STATUS_3 = "mall:order:status_3";
 
 	/** 待评价订单 */
 	public static final String MALL_CACHE_ORDER_APPRAISE_STATUS = "mall:order:appraise_status:";
@@ -37,5 +34,8 @@ public class CacheConstants {
 
 	/** 系统在线用户 */
 	public static final String SYS_ONLINE_KEY = "satoken:login:online_user:";
+
+	/** 菜单信息缓存 */
+	public static final String MENU_CACHE = "menu_cache";
 
 }

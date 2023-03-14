@@ -23,11 +23,9 @@ public class MallOrderConstants {
 	public static final String PAYMENT_TYPE_2 = "2";
 
 	/**
-	 * 订单类型：1.普通订单；2.多人拼团；
+	 * 订单类型：1.普通订单；
 	 */
 	public static final String ORDER_TYPE_1 = "1";
-
-	public static final String ORDER_TYPE_2 = "2";
 
 	/**
 	 * 订单创建方式：1.购物车下单；2.普通购买下单
@@ -68,6 +66,10 @@ public class MallOrderConstants {
 
 	public static final String SERVICE_KEY = "/mallapi";
 
+	public static final String LOGISTICS_ID_KEY = "${logisticsId}";
+
+	public static final String TENANT_ID_KEY = "${tenantId}";
+
 	/**
 	 * 物流回调接口
 	 */
@@ -80,18 +82,8 @@ public class MallOrderConstants {
 	public static final String NOTIFY_PAY_WX_URL = SERVICE_KEY + "/order/notify/pay/wx/";
 
 	/**
-	 * 聚合订单微信支付回调接口
-	 */
-	public static final String NOTIFY_AGGREGAT_PAY_WX_URL = SERVICE_KEY + "/order/notify/aggregat/pay/wx/";
-
-	/**
 	 * 微信退款回调接口
 	 */
 	public static final String NOTIFY_REFUND_WX_URL = SERVICE_KEY + "/order/notify/refund/wx/";
-
-	/**
-	 * 聚合订单微信退款回调接口
-	 */
-	public static final String NOTIFY_AGGREGAT_REFUND_WX_URL = SERVICE_KEY + "/order/notify/aggregat/refund/wx/";
 
 }

@@ -25,7 +25,8 @@ public interface DistributionOrderMapper extends BaseMapper<DistributionOrder> {
 	 * @param distributionOrder
 	 * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.huanxing.cloud.mall.common.entity.DistributionOrder>
 	 */
-	IPage<DistributionOrder> selectPage(Page page, @Param("query") DistributionOrder distributionOrder);
+	IPage<DistributionOrder> selectDistributionOrderPage(Page page,
+			@Param("query") DistributionOrder distributionOrder);
 
 	/**
 	 * 查询用户冻结中佣金总额

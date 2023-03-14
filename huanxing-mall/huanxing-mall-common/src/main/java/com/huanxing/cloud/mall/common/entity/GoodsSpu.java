@@ -108,9 +108,6 @@ public class GoodsSpu extends Model<GoodsSpu> {
 	private List<GoodsSpuSpecs> goodsSpuSpecs;
 
 	@TableField(exist = false)
-	private GrouponInfo grouponInfo;
-
-	@TableField(exist = false)
 	private String collectId;
 
 }

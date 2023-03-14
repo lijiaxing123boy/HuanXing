@@ -12,17 +12,17 @@
     <artifactId>huanxing-common</artifactId>
     <modules>
         <module>huanxing-common-core</module>
-        <module>huanxing-common-redis</module>
         <module>huanxing-common-storage</module>
         <module>huanxing-common-mybatis</module>
         <module>huanxing-common-log</module>
         <module>huanxing-common-security</module>
         <module>huanxing-common-job</module>
-        <module>huanxing-common-kuaidi100</module>
+        <module>huanxing-common-logistics</module>
         <module>huanxing-common-nacos</module>
         <module>huanxing-common-feign</module>
         <module>huanxing-common-sms</module>
     </modules>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>

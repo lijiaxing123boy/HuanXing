@@ -21,7 +21,7 @@
         user_info.city,
         user_info.avatar_url
     </sql>
-    <select id="selectPage" resultType="com.huanxing.cloud.mall.common.entity.UserInfo">
+    <select id="selectUserPage" resultType="com.huanxing.cloud.mall.common.entity.UserInfo">
         SELECT
         <include refid="userInfoSql"/>
         FROM user_info AS user_info

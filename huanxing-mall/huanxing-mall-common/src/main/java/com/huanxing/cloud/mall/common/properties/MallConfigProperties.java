@@ -1,12 +1,9 @@
 package com.huanxing.cloud.mall.common.properties;
 
-import com.huanxing.cloud.mall.common.entity.LogisticsCompanyInfo;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
 
 /**
  * 商城配置
@@ -34,8 +31,5 @@ public class MallConfigProperties {
 
 	/** 快递100 key */
 	private String logisticsKey;
-
-	/** 物流公司 */
-	private List<LogisticsCompanyInfo> logisticsCompanyInfos;
 
 }

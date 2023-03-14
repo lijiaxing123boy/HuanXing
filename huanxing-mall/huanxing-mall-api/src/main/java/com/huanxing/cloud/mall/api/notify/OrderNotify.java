@@ -4,15 +4,15 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
+import com.github.binarywang.wxpay.bean.notify.WxPayNotifyV3Response;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyV3Result;
 import com.github.binarywang.wxpay.bean.notify.WxPayRefundNotifyV3Result;
 import com.huanxing.cloud.common.core.constant.SecurityConstants;
 import com.huanxing.cloud.common.core.entity.Result;
 import com.huanxing.cloud.common.myabtis.tenant.HxTenantContextHolder;
-import com.huanxing.cloud.mall.api.service.*;
-import com.huanxing.cloud.mall.common.entity.AggregatOrder;
-import com.huanxing.cloud.mall.common.entity.AggregatRefundOrder;
+import com.huanxing.cloud.mall.api.service.IOrderInfoService;
+import com.huanxing.cloud.mall.api.service.IOrderLogisticsService;
+import com.huanxing.cloud.mall.api.service.IOrderRefundService;
 import com.huanxing.cloud.mall.common.entity.OrderInfo;
 import com.huanxing.cloud.mall.common.entity.OrderRefund;
 import com.huanxing.cloud.mall.common.feign.FeignWxPayService;
@@ -50,17 +50,12 @@ public class OrderNotify {
 
 	private final FeignWxRefundService feignWxRefundService;
 
-	private final IAggregatOrderService aggregatOrderService;
-
-	private final IAggregatRefundOrderService aggregatRefundOrderService;
-
 	@ApiOperation(value = "微信支付回调")
 	@PostMapping("/pay/wx/{tenantId}")
 	public String notifyOrderWx(@PathVariable("tenantId") String tenantId, @RequestBody String notifyData) {
-		log.info("tenantId" + tenantId);
 		log.info("微信支付回调：{}", notifyData);
 		if (StrUtil.isEmpty(tenantId)) {
-			return WxPayNotifyResponse.fail("tenantId is empty");
+			return WxPayNotifyV3Response.fail("tenantId is empty");
 		}
 		HxTenantContextHolder.setCurrentTenantId(tenantId);
 		// 解密微信支付回调
@@ -69,11 +64,11 @@ public class OrderNotify {
 		if (Boolean.TRUE.equals(wxPayOrderNotifyV3ResultResult.isOk())) {
 			WxPayOrderNotifyV3Result wxPayOrderNotifyV3Result = wxPayOrderNotifyV3ResultResult.getData();
 			WxPayOrderNotifyV3Result.DecryptNotifyResult decryptNotifyResult = wxPayOrderNotifyV3Result.getResult();
-			;
+
 			OrderInfo orderInfo = orderInfoService.getOne(
 					Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getOrderNo, decryptNotifyResult.getOutTradeNo()));
 			if (ObjectUtil.isNull(orderInfo)) {
-				return WxPayNotifyResponse.fail("订单不存在");
+				return WxPayNotifyV3Response.fail("订单不存在");
 			}
 			orderInfo.setTradeType(decryptNotifyResult.getTradeType());
 			orderInfo.setTransactionId(decryptNotifyResult.getTransactionId());
@@ -82,41 +77,9 @@ public class OrderNotify {
 			orderInfoService.notifyOrder(orderInfo);
 		}
 		else {
-			return WxPayNotifyResponse.fail("解密失败");
+			return WxPayNotifyV3Response.fail("解密失败");
 		}
-		return WxPayNotifyResponse.success("成功");
-	}
-
-	@ApiOperation(value = "聚合码微信支付回调")
-	@PostMapping("/aggregat/pay/wx/{tenantId}")
-	public String notifyAggregatOrderWx(@PathVariable("tenantId") String tenantId, @RequestBody String notifyData) {
-		log.info("tenantId" + tenantId);
-		log.info("聚合码微信支付回调：{}", notifyData);
-		if (StrUtil.isEmpty(tenantId)) {
-			return WxPayNotifyResponse.fail("tenantId is empty");
-		}
-		HxTenantContextHolder.setCurrentTenantId(tenantId);
-		// 解密微信支付回调
-		Result<WxPayOrderNotifyV3Result> wxPayOrderNotifyV3ResultResult = feignWxPayService.notifyOrderData(notifyData,
-				SecurityConstants.SOURCE_IN);
-		if (Boolean.TRUE.equals(wxPayOrderNotifyV3ResultResult.isOk())) {
-			WxPayOrderNotifyV3Result wxPayOrderNotifyV3Result = wxPayOrderNotifyV3ResultResult.getData();
-			WxPayOrderNotifyV3Result.DecryptNotifyResult decryptNotifyResult = wxPayOrderNotifyV3Result.getResult();
-
-			AggregatOrder aggregatOrder = aggregatOrderService.getOne(Wrappers.<AggregatOrder>lambdaQuery()
-					.eq(AggregatOrder::getOrderNo, decryptNotifyResult.getOutTradeNo()));
-			if (ObjectUtil.isNull(aggregatOrder)) {
-				return WxPayNotifyResponse.fail("订单不存在");
-			}
-			aggregatOrder.setTransactionId(decryptNotifyResult.getTransactionId());
-			aggregatOrder.setPaymentType(PayConstants.PAY_TYPE_1);
-			aggregatOrder.setPaymentTime(LocalDateTime.now());
-			aggregatOrderService.notifyOrder(aggregatOrder);
-		}
-		else {
-			return WxPayNotifyResponse.fail("解密失败");
-		}
-		return WxPayNotifyResponse.success("成功");
+		return WxPayNotifyV3Response.success("成功");
 	}
 
 	@ApiOperation(value = "支付宝支付回调")
@@ -129,55 +92,26 @@ public class OrderNotify {
 	@ApiOperation(value = "微信退款回调")
 	@PostMapping("/refund/wx/{tenantId}")
 	public String notifyRefundOrderWx(@PathVariable("tenantId") String tenantId, @RequestBody String notifyData) {
-		log.info("tenantId" + tenantId);
 		log.info("微信退款回调：{}", notifyData);
 		if (StrUtil.isEmpty(tenantId)) {
-			return WxPayNotifyResponse.fail("tenantId is empty");
+			return WxPayNotifyV3Response.fail("tenantId is empty");
 		}
 		HxTenantContextHolder.setCurrentTenantId(tenantId);
 		Result<WxPayRefundNotifyV3Result> result = feignWxRefundService.notifyRefundData(notifyData,
 				SecurityConstants.SOURCE_IN);
 		if (Boolean.FALSE.equals(result.isOk())) {
-			return WxPayNotifyResponse.fail("解密失败");
+			return WxPayNotifyV3Response.fail("解密失败");
 		}
 		WxPayRefundNotifyV3Result.DecryptNotifyResult decryptNotifyResult = result.getData().getResult();
 		// 查询退款单
 		OrderRefund orderRefund = orderRefundService.getOne(
 				Wrappers.<OrderRefund>lambdaQuery().eq(OrderRefund::getRefundId, decryptNotifyResult.getRefundId()));
 		if (ObjectUtil.isNull(orderRefund)) {
-			return WxPayNotifyResponse.fail("无效订单号");
+			return WxPayNotifyV3Response.fail("无效订单号");
 		}
 		orderRefund.setUserReceivedAccount(decryptNotifyResult.getUserReceivedAccount());
 		orderRefundService.notifyRefund(orderRefund);
-		return WxPayNotifyResponse.success("成功");
-	}
-
-	@ApiOperation(value = "聚合码微信退款回调")
-	@PostMapping("/aggregat/refund/wx/{tenantId}")
-	public String notifyRefundAggregatOrderWx(@PathVariable("tenantId") String tenantId,
-			@RequestBody String notifyData) {
-		log.info("tenantId" + tenantId);
-		log.info("聚合码微信退款回调：{}", notifyData);
-		if (StrUtil.isEmpty(tenantId)) {
-			return WxPayNotifyResponse.fail("tenantId is empty");
-		}
-		HxTenantContextHolder.setCurrentTenantId(tenantId);
-		Result<WxPayRefundNotifyV3Result> result = feignWxRefundService.notifyRefundData(notifyData,
-				SecurityConstants.SOURCE_IN);
-		if (Boolean.FALSE.equals(result.isOk())) {
-			return WxPayNotifyResponse.fail("解密失败");
-		}
-		WxPayRefundNotifyV3Result.DecryptNotifyResult decryptNotifyResult = result.getData().getResult();
-		// 查询退款单
-		AggregatRefundOrder aggregatRefundOrder = aggregatRefundOrderService
-				.getOne(Wrappers.<AggregatRefundOrder>lambdaQuery().eq(AggregatRefundOrder::getRefundId,
-						decryptNotifyResult.getRefundId()));
-		if (ObjectUtil.isNull(aggregatRefundOrder)) {
-			return WxPayNotifyResponse.fail("无效订单号");
-		}
-		aggregatRefundOrder.setUserReceivedAccount(decryptNotifyResult.getUserReceivedAccount());
-		aggregatRefundOrderService.notifyRefund(aggregatRefundOrder);
-		return WxPayNotifyResponse.success("成功");
+		return WxPayNotifyV3Response.success("成功");
 	}
 
 	/**

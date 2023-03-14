@@ -1,11 +1,8 @@
 package com.huanxing.cloud.common.feign.config;
 
-import cn.dev33.satoken.id.SaIdUtil;
 import cn.dev33.satoken.same.SaSameUtil;
-import cn.dev33.satoken.stp.StpUtil;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**

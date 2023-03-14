@@ -107,4 +107,10 @@ public class UserInfoController {
 		return Result.success(rt);
 	}
 
+	@ApiOperation(value = "我的团队")
+	@GetMapping("/team-page")
+	public Result getTeamPage(Page page, UserInfoDTO userInfoDTO) {
+		return Result.success(userInfoService.getTeamPage(page, userInfoDTO));
+	}
+
 }

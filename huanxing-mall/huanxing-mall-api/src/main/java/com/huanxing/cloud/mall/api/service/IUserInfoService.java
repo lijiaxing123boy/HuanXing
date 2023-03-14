@@ -48,7 +48,7 @@ public interface IUserInfoService extends IService<UserInfo> {
 	 * @date 2022/3/10 10:41
 	 * @return: com.huanxing.cloud.mall.common.entity.UserInfo
 	 */
-	UserInfo maPhoneLogin(HxTokenInfo hxTokenInfo, String key, String phoneNumber, String shareUserNumber);
+	UserInfo maPhoneLogin(HxTokenInfo hxTokenInfo, String key, String phoneNumber, Integer shareUserNumber);
 
 	/**
 	 * 保存或修改商城用户信息

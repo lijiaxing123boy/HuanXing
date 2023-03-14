@@ -41,7 +41,6 @@
             <groupId>com.huanxing</groupId>
             <artifactId>huanxing-common-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.github.penggle</groupId>
             <artifactId>kaptcha</artifactId>
@@ -50,11 +49,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        <!--           缓存模块-->
-        <dependency>
-            <groupId>com.huanxing</groupId>
-            <artifactId>huanxing-common-redis</artifactId>
         </dependency>
         <!-- Sa-Token 权限认证（Reactor响应式集成）, 在线文档：http://sa-token.dev33.cn/ -->
         <dependency>

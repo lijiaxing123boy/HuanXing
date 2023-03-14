@@ -42,20 +42,21 @@ public class SmsValidateCodeHandler implements HandlerFunction<ServerResponse> {
 	public Mono<ServerResponse> handle(ServerRequest request) {
 		// 获取手机号
 		String phone = request.queryParam("phone").get();
-		String code = RandomUtil.randomNumbers(4);
-		Map<String, String> maps = new HashMap<>();
-		maps.put("code", code);
-		try {
-			aliSmsUtils.sendSms(phone, JSONUtil.toJsonStr(maps));
+		if (null == redisTemplate.opsForValue().get(CacheConstants.SMS_CODE_KEY + phone)) {
+			String code = RandomUtil.randomNumbers(4);
+			Map<String, String> maps = new HashMap<>();
+			maps.put("code", code);
+			try {
+				aliSmsUtils.sendSms(phone, JSONUtil.toJsonStr(maps));
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e.getMessage());
+			}
+			// 保存验证码信息
+			redisTemplate.setKeySerializer(new StringRedisSerializer());
+			redisTemplate.opsForValue().set(CacheConstants.SMS_CODE_KEY + phone, code, 300, TimeUnit.SECONDS);
 		}
-		catch (Exception e) {
-			throw new RuntimeException(e.getMessage());
-		}
-		// 保存验证码信息
-		redisTemplate.setKeySerializer(new StringRedisSerializer());
-		redisTemplate.opsForValue().set(CacheConstants.SMS_CODE_KEY + phone, code, 300, TimeUnit.SECONDS);
-		Result result = new Result();
-		result.setCode(CommonConstants.SUCCESS);
+
 		return ServerResponse.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(BodyInserters.empty());
 	}
 

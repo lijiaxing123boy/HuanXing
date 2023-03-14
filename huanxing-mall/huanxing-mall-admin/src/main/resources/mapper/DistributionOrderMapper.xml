@@ -30,13 +30,16 @@
                     ofType="com.huanxing.cloud.mall.common.entity.OrderInfo"
                     select="com.huanxing.cloud.mall.admin.mapper.OrderInfoMapper.selectById"></collection>
     </resultMap>
-    <select id="selectPage" resultMap="resultMapPage">
+    <select id="selectDistributionOrderPage" resultMap="resultMapPage">
         SELECT
         <include refid="distributionOrderSql"/>
         FROM distribution_order AS distribution_order
         <where>
             <if test="query.distributionUserId !=null and query.distributionUserId !=''">
                 AND distribution_order.`distribution_user_id` = #{query.distributionUserId}
+            </if>
+            <if test="query.userId !=null and query.userId !=''">
+                AND distribution_order.`user_id` = #{query.userId}
             </if>
         </where>
     </select>

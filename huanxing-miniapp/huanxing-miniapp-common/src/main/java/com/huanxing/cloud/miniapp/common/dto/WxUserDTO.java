@@ -33,4 +33,6 @@ public class WxUserDTO implements Serializable {
 
 	private String wxUserId;
 
+	private String shareUserNumber;
+
 }

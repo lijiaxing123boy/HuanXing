@@ -30,7 +30,7 @@ public class UserInfoDTO {
 	private String code;
 
 	@ApiModelProperty(value = "分享用户编号")
-	private String shareUserNumber;
+	private Integer shareUserNumber;
 
 	@ApiModelProperty(value = "上级用户主键")
 	private String parentId;

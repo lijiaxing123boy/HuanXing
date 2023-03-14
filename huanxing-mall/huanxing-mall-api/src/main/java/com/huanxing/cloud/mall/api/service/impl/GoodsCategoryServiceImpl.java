@@ -29,7 +29,8 @@ public class GoodsCategoryServiceImpl extends ServiceImpl<GoodsCategoryMapper, G
 
 	@Override
 	public List<Tree<String>> getGoodsCategoryTreeList() {
-		List<GoodsCategory> goodsCategories = baseMapper.selectList(Wrappers.emptyWrapper());
+		List<GoodsCategory> goodsCategories = baseMapper
+				.selectList(Wrappers.<GoodsCategory>lambdaQuery().eq(GoodsCategory::getStatus, CommonConstants.YES));
 		List<TreeNode<String>> treeNodes = goodsCategories.stream()
 				.sorted(Comparator.comparingInt(GoodsCategory::getSort)).map(goodsCategory -> {
 					TreeNode<String> treeNode = new TreeNode();

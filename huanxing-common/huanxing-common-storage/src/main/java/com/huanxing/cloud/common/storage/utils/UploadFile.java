@@ -3,7 +3,6 @@ package com.huanxing.cloud.common.storage.utils;
 import com.huanxing.cloud.common.core.constant.CommonConstants;
 import com.huanxing.cloud.common.storage.entity.StorageConfig;
 import com.huanxing.cloud.upms.common.dto.SysStorageConfigDTO;
-import com.huanxing.cloud.upms.common.entity.SysStorageConfig;
 
 import java.io.File;
 

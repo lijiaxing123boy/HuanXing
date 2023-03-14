@@ -6,6 +6,7 @@ import com.huanxing.cloud.mall.api.factory.EventFactory;
 import com.huanxing.cloud.mall.api.factory.handler.NotifyOrderHandler;
 import com.huanxing.cloud.mall.api.service.IOrderInfoService;
 import com.huanxing.cloud.mall.common.constant.MallOrderConstants;
+import com.huanxing.cloud.mall.common.dto.OrderConsumerDTO;
 import com.huanxing.cloud.mall.common.entity.OrderInfo;
 import com.huanxing.cloud.mall.common.enums.OrderStatusEnum;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,9 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 普通订单类型实现类
@@ -38,7 +42,10 @@ public class GoodsNotifyOrderHandler implements NotifyOrderHandler {
 		orderInfo.setPayStatus(CommonConstants.YES);
 		orderInfoService.updateById(orderInfo);
 		// MQ 推送分销
-		rocketMQTemplate.asyncSend(RocketMqConstants.DISTRIBUTION_ORDER_TOPIC, new GenericMessage<>(orderInfo.getId()),
+		OrderConsumerDTO orderConsumerDTO = new OrderConsumerDTO();
+		orderConsumerDTO.setOrderId(orderInfo.getId());
+		orderConsumerDTO.setTenantId(orderInfo.getTenantId());
+		rocketMQTemplate.asyncSend(RocketMqConstants.DISTRIBUTION_ORDER_TOPIC, new GenericMessage<>(orderConsumerDTO),
 				new SendCallback() {
 					@Override
 					public void onSuccess(SendResult sendResult) {

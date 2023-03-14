@@ -4,7 +4,7 @@ import com.huanxing.cloud.common.core.constant.SecurityConstants;
 import com.huanxing.cloud.common.core.constant.ServiceNameConstants;
 import com.huanxing.cloud.common.core.entity.Result;
 import com.huanxing.cloud.common.feign.config.FeignInterceptor;
-import com.huanxing.cloud.miniapp.common.vo.WxQrCodeVO;
+import com.huanxing.cloud.miniapp.common.dto.WxQrCodeDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,15 +22,14 @@ public interface FeignWxQrCodeService {
 
 	/**
 	 * 生成小程序码
-	 *
+	 * @param wxQrCodeDTO
+	 * @param source
 	 * @author lijx
 	 * @date 2022/7/12
-	 * @param wxQrCodeVO
-	 * @param source
 	 * @return: com.huanxing.cloud.common.core.entity.Result
 	 */
 	@GetMapping("/wxqrcode/inner/unlimit")
-	Result createWxaCodeUnlimit(@RequestBody WxQrCodeVO wxQrCodeVO,
+	Result createWxaCodeUnlimit(@RequestBody WxQrCodeDTO wxQrCodeDTO,
 			@RequestHeader(SecurityConstants.SOURCE) String source);
 
 }

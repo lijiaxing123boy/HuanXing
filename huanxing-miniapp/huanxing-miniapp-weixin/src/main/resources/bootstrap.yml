@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: huanxing-miniapp-weixin
+    name: @artifactId@
   cloud:
     nacos:
       discovery:
@@ -14,4 +14,4 @@ spring:
         shared-configs:
           - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
   profiles:
-    active: dev
+    active: @profiles.active@

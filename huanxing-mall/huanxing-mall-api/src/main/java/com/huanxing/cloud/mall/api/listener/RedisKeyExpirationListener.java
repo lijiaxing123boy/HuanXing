@@ -3,6 +3,7 @@ package com.huanxing.cloud.mall.api.listener;
 import cn.hutool.core.util.ObjectUtil;
 import com.huanxing.cloud.common.core.constant.CacheConstants;
 import com.huanxing.cloud.common.core.constant.CommonConstants;
+import com.huanxing.cloud.common.myabtis.tenant.HxTenantContextHolder;
 import com.huanxing.cloud.mall.api.service.IDistributionOrderService;
 import com.huanxing.cloud.mall.api.service.IOrderInfoService;
 import com.huanxing.cloud.mall.common.constant.MallOrderConstants;
@@ -38,28 +39,22 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
 	@Override
 	public void onMessage(Message message, byte[] pattern) {
 		String expiredKey = message.toString();
-		// 订单自动取消
-		if (expiredKey.contains(CacheConstants.MALL_CACHE_ORDER_STATUS_1)) {
-			expiredKey = expiredKey.replace(CacheConstants.MALL_CACHE_ORDER_STATUS_1, "");
-			OrderInfo orderInfo = orderInfoService.getById(expiredKey);
-			// 只有待支付的订单能取消
-			if (ObjectUtil.isNotNull(orderInfo) && CommonConstants.NO.equals(orderInfo.getPayStatus())) {
-				orderInfoService.cancelOrder(orderInfo);
-			}
-		}
+
 		// 订单自动确认收货
 		if (expiredKey.contains(CacheConstants.MALL_CACHE_ORDER_STATUS_3)) {
-			expiredKey = expiredKey.replace(CacheConstants.MALL_CACHE_ORDER_STATUS_3, "");
-			OrderInfo orderInfo = orderInfoService.getById(expiredKey);
+			String key[] = expiredKey.split(":");
+			HxTenantContextHolder.setCurrentTenantId(key[0]);
+			OrderInfo orderInfo = orderInfoService.getById(key[2]);
 			// 只有已支付未确认收货的订单可以自动确认收货
 			if (ObjectUtil.isNotNull(orderInfo) && CommonConstants.YES.equals(orderInfo.getPayStatus())) {
 				orderInfoService.receiveOrder(orderInfo);
 			}
 		}
 		// 订单自动评价
-		if (expiredKey.contains(CacheConstants.MALL_CACHE_DISTRIBUTION_STATUS)) {
-			expiredKey = expiredKey.replace(CacheConstants.MALL_CACHE_DISTRIBUTION_STATUS, "");
-			OrderInfo orderInfo = orderInfoService.getById(expiredKey);
+		if (expiredKey.contains(CacheConstants.MALL_CACHE_ORDER_APPRAISE_STATUS)) {
+			String key[] = expiredKey.split(":");
+			HxTenantContextHolder.setCurrentTenantId(key[0]);
+			OrderInfo orderInfo = orderInfoService.getById(key[2]);
 			// 只有未解冻的分销订单可以解冻
 			if (ObjectUtil.isNotNull(orderInfo) && CommonConstants.NO.equals(orderInfo.getAppraiseStatus())) {
 				// TODO 还未想好怎么评价
@@ -67,8 +62,9 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
 		}
 		// 佣金订单解冻
 		if (expiredKey.contains(CacheConstants.MALL_CACHE_DISTRIBUTION_STATUS)) {
-			expiredKey = expiredKey.replace(CacheConstants.MALL_CACHE_DISTRIBUTION_STATUS, "");
-			DistributionOrder distributionOrder = distributionOrderService.getById(expiredKey);
+			String key[] = expiredKey.split(":");
+			HxTenantContextHolder.setCurrentTenantId(key[0]);
+			DistributionOrder distributionOrder = distributionOrderService.getById(key[2]);
 			// 只有未解冻的分销订单可以解冻
 			if (ObjectUtil.isNotNull(distributionOrder)
 					&& MallOrderConstants.DISTRIBUTION_STATUS_1.equals(distributionOrder.getStatus())) {

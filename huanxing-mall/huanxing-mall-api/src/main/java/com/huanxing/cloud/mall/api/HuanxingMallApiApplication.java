@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author lijx
  * @since 2022/2/26 16:38
  */
-@HxEnableXxlJob
+// @HxEnableXxlJob
 @HxEnableFeignClients
 @SpringBootApplication
 public class HuanxingMallApiApplication {

@@ -8,6 +8,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,9 +33,11 @@ public class CouponInfo extends Model<CouponInfo> {
 	private String id;
 
 	@ApiModelProperty(value = "优惠券名称")
+	@NotBlank(message = "优惠券名称为空")
 	private String couponName;
 
 	@ApiModelProperty(value = "优惠券类型：1.满减券；2.折扣券；")
+	@NotBlank(message = "优惠券类型为空")
 	private String couponType;
 
 	@ApiModelProperty(value = "优惠金额（元）")
@@ -45,7 +50,11 @@ public class CouponInfo extends Model<CouponInfo> {
 	private BigDecimal threshold;
 
 	@ApiModelProperty(value = "发行数量")
-	private Integer totalCount;
+	@NotNull(message = "发行数量不能为空")
+	private Integer totalNum;
+
+	@ApiModelProperty(value = "剩余数量")
+	private Integer remainNum;
 
 	@ApiModelProperty(value = "已发放券数量")
 	private Integer assignCount;
@@ -57,12 +66,15 @@ public class CouponInfo extends Model<CouponInfo> {
 	private Integer receiveCount;
 
 	@ApiModelProperty(value = "有效开始时间")
+	@NotNull(message = "有效开始时间为空")
 	private LocalDateTime receiveStartedAt;
 
 	@ApiModelProperty(value = "有效结束时间")
+	@NotNull(message = "有效结束时间为空")
 	private LocalDateTime receiveEndedAt;
 
 	@ApiModelProperty(value = "可用范围：1.全部商品；2.指定商品；")
+	@NotBlank(message = "可用范围为空")
 	private String useRange;
 
 	@ApiModelProperty(value = "商品id")
@@ -72,6 +84,7 @@ public class CouponInfo extends Model<CouponInfo> {
 	private String useDescription;
 
 	@ApiModelProperty(value = "状态：0.正常；1.关闭；")
+	@NotBlank(message = "状态为空")
 	private String status;
 
 	@ApiModelProperty(value = "创建者ID")

@@ -15,6 +15,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Slf4j
 @AllArgsConstructor
 @RestController
@@ -44,7 +46,8 @@ public class CouponInfoController {
 	@ApiOperation(value = "优惠券新增")
 	@SaCheckPermission("mall:couponinfo:add")
 	@PostMapping
-	public Result add(@RequestBody CouponInfo couponInfo) {
+	public Result add(@Valid @RequestBody CouponInfo couponInfo) {
+		couponInfo.setRemainNum(couponInfo.getTotalNum());
 		return Result.success(couponInfoService.save(couponInfo));
 	}
 
@@ -52,7 +55,7 @@ public class CouponInfoController {
 	@ApiOperation(value = "优惠券修改")
 	@SaCheckPermission("mall:couponinfo:edit")
 	@PutMapping
-	public Result edit(@RequestBody CouponInfo couponInfo) {
+	public Result edit(@Valid @RequestBody CouponInfo couponInfo) {
 		return Result.success(couponInfoService.updateById(couponInfo));
 	}
 

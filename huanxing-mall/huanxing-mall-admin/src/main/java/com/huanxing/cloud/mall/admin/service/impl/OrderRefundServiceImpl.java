@@ -109,7 +109,7 @@ public class OrderRefundServiceImpl extends ServiceImpl<OrderRefundMapper, Order
 							wxPayRefundV3Request.setNotifyUrl(mallConfigProperties.getNotifyDomain()
 									+ MallOrderConstants.NOTIFY_REFUND_WX_URL + orderRefund.getTenantId());
 							Result<WxPayRefundV3Result> result = feignWxRefundService.refund(wxPayRefundV3Request,
-									SecurityConstants.SOURCE);
+									SecurityConstants.SOURCE_IN);
 							if (!result.isOk()) {
 								throw new HxBusinessException(result.getMsg());
 							}

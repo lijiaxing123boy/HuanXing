@@ -114,8 +114,8 @@ public class TokenInterceptor implements HandlerInterceptor {
 				// 登录才能访问
 				if (ObjectUtil.isNotNull(hxCheckLogin) && hxCheckLogin.type()) {
 					if (StrUtil.isBlank(hxTokenInfo.getMallUserId())) {
-						Result result = Result.fail(MallErrorCodeEnum.ERROR_40003.getCode(),
-								MallErrorCodeEnum.ERROR_40003.getMsg());
+						Result result = Result.fail(MallErrorCodeEnum.ERROR_40002.getCode(),
+								MallErrorCodeEnum.ERROR_40002.getMsg());
 						this.writerPrint(response, result);
 						return Boolean.FALSE;
 					}

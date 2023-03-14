@@ -6,7 +6,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
 /**
- * 客户端监听redis的过期事件
+ * 客户端监听redis
  *
  * @author lijx
  * @since 2022/3/8 17:07

@@ -1,5 +1,7 @@
 package com.huanxing.cloud.mall.api.controller;
 
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.huanxing.cloud.common.core.entity.Result;
 import com.huanxing.cloud.mall.api.annotation.HxCheckLogin;
@@ -11,6 +13,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 购物车
@@ -53,9 +57,20 @@ public class ShoppingCartController {
 
 	@ApiOperation(value = "购物车删除")
 	@HxCheckLogin
-	@DeleteMapping("/{id}")
-	public Result add(@PathVariable String id) {
-		return Result.success(shoppingCartService.removeById(id));
+	@PostMapping("/del")
+	public Result del(@RequestBody List<String> ids) {
+		return Result.success(shoppingCartService.removeByIds(ids));
+	}
+
+	@ApiOperation(value = "查询购物车数量")
+	@GetMapping("/count")
+	public Result count() {
+		String userId = HxTokenHolder.getMallUserId();
+		if (StrUtil.isEmpty(userId)) {
+			return Result.success(0);
+		}
+		return Result.success(
+				shoppingCartService.count(Wrappers.<ShoppingCart>lambdaQuery().eq(ShoppingCart::getUserId, userId)));
 	}
 
 }

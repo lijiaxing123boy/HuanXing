@@ -55,7 +55,7 @@ public class WxPayController {
 		WxPayService wxPayService = WxPayAutoConfiguration.wxPayService(wxPayConfig);
 		try {
 			switch (tradeType) {
-				case PayConstants.TRADE_TYPE_JSAP:
+				case PayConstants.TRADE_TYPE_JSAPI:
 					return Result.success(wxPayService.createOrderV3(TradeTypeEnum.JSAPI, wxPayUnifiedOrderV3Request));
 				case PayConstants.TRADE_TYPE_APP:
 					PayConfig payConfig = payConfigService
@@ -94,7 +94,6 @@ public class WxPayController {
 		try {
 			WxPayRefundV3Result wxPayRefundV3Result = WxPayAutoConfiguration.wxPayService(wxPayConfig)
 					.refundV3(wxPayRefundV3Request);
-			log.info("微信退款申请 response=>：{}", wxPayRefundV3Result);
 			return Result.success(wxPayRefundV3Result);
 		}
 		catch (WxPayException e) {

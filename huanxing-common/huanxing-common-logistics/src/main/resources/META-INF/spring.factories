@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.huanxing.cloud.common.logistics.util.Kuaidi100Utils

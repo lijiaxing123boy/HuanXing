@@ -1,6 +1,7 @@
 package com.huanxing.cloud.mall.api.controller;
 
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
+import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -27,8 +28,8 @@ import com.huanxing.cloud.mall.common.enums.MallErrorCodeEnum;
 import com.huanxing.cloud.mall.common.feign.FeignAliUserService;
 import com.huanxing.cloud.mall.common.feign.FeignWxUserService;
 import com.huanxing.cloud.miniapp.common.dto.AliUserDTO;
+import com.huanxing.cloud.miniapp.common.dto.MaUserDTO;
 import com.huanxing.cloud.miniapp.common.dto.WxUserDTO;
-import com.huanxing.cloud.miniapp.common.vo.MaUserVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -37,6 +38,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -79,7 +81,7 @@ public class UserInfoController {
 
 	@ApiOperation(value = "小程序手机号快速登录")
 	@PostMapping("/ma/login/phone")
-	public Result maPhoneLogin(HttpServletRequest request, @RequestBody MaUserVO maUserVO) {
+	public Result maPhoneLogin(HttpServletRequest request, @RequestBody MaUserDTO maUserDTO) {
 		String appId = request.getHeader(MallCommonConstants.HEADER_APP_ID);
 		String clientType = request.getHeader(MallCommonConstants.HEADER_CLIENT_TYPE);
 		HxTokenInfo hxTokenInfo = HxTokenHolder.getTokenInfo();
@@ -88,9 +90,9 @@ public class UserInfoController {
 		String phone;
 		if (ClientTypeEnum.WX_MA.getCode().equals(clientType)) {
 			WxUserDTO wxUserDTO = new WxUserDTO();
-			wxUserDTO.setEncryptedData(maUserVO.getEncryptedData());
+			wxUserDTO.setEncryptedData(maUserDTO.getEncryptedData());
 			wxUserDTO.setSessionKey(hxTokenInfo.getSessionKey());
-			wxUserDTO.setIv(maUserVO.getIv());
+			wxUserDTO.setIv(maUserDTO.getIv());
 			wxUserDTO.setClientType(clientType);
 			wxUserDTO.setAppId(appId);
 
@@ -106,7 +108,7 @@ public class UserInfoController {
 			AliUserDTO aliUserDTO = new AliUserDTO();
 			aliUserDTO.setAppId(appId);
 			aliUserDTO.setClientType(clientType);
-			aliUserDTO.setEncryptedData(maUserVO.getEncryptedData());
+			aliUserDTO.setEncryptedData(maUserDTO.getEncryptedData());
 			// Result<> feignAliUserService.getPhoneNumberInfo(aliUserDTO);
 			return Result.fail(MallErrorCodeEnum.ERROR_99999.getCode(), MallErrorCodeEnum.ERROR_99999.getMsg());
 		}
@@ -114,7 +116,7 @@ public class UserInfoController {
 			return Result.fail(MallErrorCodeEnum.ERROR_60010.getCode(), MallErrorCodeEnum.ERROR_60010.getMsg());
 		}
 
-		UserInfo userInfo = userInfoService.maPhoneLogin(hxTokenInfo, key, phone, maUserVO.getShareUserNumber());
+		UserInfo userInfo = userInfoService.maPhoneLogin(hxTokenInfo, key, phone, maUserDTO.getShareUserNumber());
 		// 获取用户所在地
 		try {
 			userInfoService.getUserCity(request, userInfo.getId());
@@ -159,13 +161,16 @@ public class UserInfoController {
 			userInfo.setUserGrade(MallUserConstants.USER_GRADE_0);
 			userInfo.setNickName(mobilePhoneDesensitization.serialize(userInfoDTO.getPhone()));
 			userInfo.setAvatarUrl(MallUserConstants.DEFAULT_AVATAR_URL);
+			userInfo.setAccountBalance(BigDecimal.ZERO);
 			userInfo.setUserSource(clientType);
 			userInfoService.save(userInfo);
 		}
-		userInfo.setShareUserNumber(userInfoDTO.getShareUserNumber());
+		if (null != userInfoDTO.getShareUserNumber()) {
+			userInfo.setShareUserNumber(userInfoDTO.getShareUserNumber());
+		}
 		// 分销关系绑定
 		distributionUserService.bindUser(userInfo);
-		if (ClientTypeEnum.WX_MA.equals(clientType) || ClientTypeEnum.ALI_MA.equals(clientType)) {
+		if (ClientTypeEnum.WX_MA.getCode().equals(clientType) || ClientTypeEnum.ALI_MA.getCode().equals(clientType)) {
 			String hxToken = request.getHeader(MallCommonConstants.HEADER_HX_TOKEN);
 			HxTokenInfo hxTokenInfo = HxTokenHolder.getTokenInfo();
 			String tokenKey = CacheConstants.MALL_USER_TOKEN + hxToken;
@@ -185,7 +190,7 @@ public class UserInfoController {
 			hxTokenInfo.setTenantId(userInfo.getTenantId());
 			redisTemplate.opsForValue().set(tokenKey, JSONUtil.toJsonStr(hxTokenInfo), CacheConstants.TOKEN_TIME,
 					TimeUnit.HOURS);
-			userInfo.setHxToken(token);
+			userInfo.setHxToken(StrUtil.removeAll(tokenKey, CacheConstants.MALL_USER_TOKEN));
 		}
 
 		// 获取用户所在地
@@ -218,6 +223,58 @@ public class UserInfoController {
 		return Result.success(userInfo);
 	}
 
+	@ApiOperation(value = "用户密码登录")
+	@PostMapping("/login/pwd")
+	public Result pwdLogin(HttpServletRequest request, @RequestBody UserInfoDTO userInfoDTO) {
+
+		String clientType = request.getHeader(MallCommonConstants.HEADER_CLIENT_TYPE);
+
+		UserInfo userInfo = userInfoService.getByPhone(userInfoDTO.getPhone());
+		if (ObjectUtil.isNull(userInfo)) {
+			return Result.fail(MallErrorCodeEnum.ERROR_50001.getCode(), MallErrorCodeEnum.ERROR_50001.getMsg());
+		}
+		if (!userInfo.getPassword().equals(SaSecureUtil.md5(userInfoDTO.getPassword()))) {
+			return Result.fail("密码错误");
+		}
+
+		if (null != userInfoDTO.getShareUserNumber()) {
+			userInfo.setShareUserNumber(userInfoDTO.getShareUserNumber());
+		}
+		// 分销关系绑定
+		distributionUserService.bindUser(userInfo);
+		if (ClientTypeEnum.WX_MA.getCode().equals(clientType) || ClientTypeEnum.ALI_MA.getCode().equals(clientType)) {
+			String hxToken = request.getHeader(MallCommonConstants.HEADER_HX_TOKEN);
+			HxTokenInfo hxTokenInfo = HxTokenHolder.getTokenInfo();
+			String tokenKey = CacheConstants.MALL_USER_TOKEN + hxToken;
+			// 更新redis中的token信息
+			hxTokenInfo.setMallUserId(userInfo.getId());
+			redisTemplate.opsForValue().set(tokenKey, JSONUtil.toJsonStr(hxTokenInfo), CacheConstants.TOKEN_TIME,
+					TimeUnit.HOURS);
+			userInfo.setHxToken(StrUtil.removeAll(tokenKey, CacheConstants.MALL_USER_TOKEN));
+		}
+		else {
+			String token = UUID.randomUUID().toString();
+			// 将token和用户信息存入redis，并设置过期时间
+			String tokenKey = CacheConstants.MALL_USER_TOKEN + token;
+			HxTokenInfo hxTokenInfo = new HxTokenInfo();
+			hxTokenInfo.setClientType(request.getHeader(MallCommonConstants.HEADER_CLIENT_TYPE));
+			hxTokenInfo.setMallUserId(userInfo.getId());
+			hxTokenInfo.setTenantId(userInfo.getTenantId());
+			redisTemplate.opsForValue().set(tokenKey, JSONUtil.toJsonStr(hxTokenInfo), CacheConstants.TOKEN_TIME,
+					TimeUnit.HOURS);
+			userInfo.setHxToken(StrUtil.removeAll(tokenKey, CacheConstants.MALL_USER_TOKEN));
+		}
+
+		// 获取用户所在地
+		try {
+			userInfoService.getUserCity(request, userInfo.getId());
+		}
+		catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		return Result.success(userInfo);
+	}
+
 	@ApiOperation(value = "修改用户信息")
 	@HxCheckLogin
 	@PostMapping("/update/info")
@@ -241,10 +298,17 @@ public class UserInfoController {
 		Object codeObj = redisTemplate.opsForValue().get(key);
 
 		if (ObjectUtil.isEmpty(codeObj) || !userInfoDTO.getCode().equals(codeObj)) {
-			throw new RuntimeException("验证码不合法");
+			return Result.fail("验证码不合法");
+		}
+		String userId = HxTokenHolder.getMallUserId();
+		// 查询手机号是否已存在
+		long count = userInfoService.count(Wrappers.<UserInfo>lambdaQuery()
+				.eq(UserInfo::getPhone, userInfoDTO.getPhone()).ne(UserInfo::getId, userId));
+		if (count > 0) {
+			return Result.fail("手机号已存在");
 		}
 		UserInfo userInfo = new UserInfo();
-		userInfo.setId(HxTokenHolder.getMallUserId());
+		userInfo.setId(userId);
 		userInfo.setPhone(userInfoDTO.getPhone());
 		return Result.success(userInfoService.updateById(userInfo));
 	}

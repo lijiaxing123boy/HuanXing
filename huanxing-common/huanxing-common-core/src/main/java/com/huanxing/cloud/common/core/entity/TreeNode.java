@@ -27,7 +27,7 @@ public class TreeNode {
 	}
 
 	public List<TreeNode> getChildren() {
-		if (children.size() <= 0) {
+		if (children.size() == 0) {
 			return null;
 		}
 		return children;

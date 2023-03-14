@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>huanxing-monitor</artifactId>
     <description>系统监控模块</description>
+
     <dependencies>
         <!--注册中心客户端-->
         <dependency>

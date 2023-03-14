@@ -76,7 +76,6 @@ public class WxUserController {
 	@ApiOperation(value = "获取用户绑定手机号信息")
 	@PostMapping("/ma/phone")
 	public Result phone(@RequestBody WxUserDTO wxUserDTO) {
-		log.info("EncryptedData=========" + wxUserDTO.getEncryptedData());
 		final WxMaService wxService = WxMaConfiguration.getMaService(wxUserDTO.getAppId());
 		// 解密
 		WxMaPhoneNumberInfo phoneNoInfo = wxService.getUserService().getPhoneNoInfo(wxUserDTO.getSessionKey(),

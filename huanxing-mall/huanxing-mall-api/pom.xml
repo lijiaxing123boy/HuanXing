@@ -51,11 +51,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
-        <!--           缓存模块-->
-        <dependency>
-            <groupId>com.huanxing</groupId>
-            <artifactId>huanxing-common-redis</artifactId>
-        </dependency>
         <!--            文件存储模块-->
         <dependency>
             <groupId>com.huanxing</groupId>
@@ -71,10 +66,10 @@
             <groupId>com.huanxing</groupId>
             <artifactId>huanxing-common-security</artifactId>
         </dependency>
-        <!--           快递100模块-->
+        <!--           物流模块-->
         <dependency>
             <groupId>com.huanxing</groupId>
-            <artifactId>huanxing-common-kuaidi100</artifactId>
+            <artifactId>huanxing-common-logistics</artifactId>
         </dependency>
         <!--           短信公共模块-->
         <dependency>

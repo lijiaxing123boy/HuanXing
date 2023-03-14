@@ -42,7 +42,7 @@ public class DistributionUserServiceImpl extends ServiceImpl<DistributionUserMap
 
 	@Override
 	public void bindUser(UserInfo userInfo) {
-		if (StrUtil.isNotEmpty(userInfo.getShareUserNumber()) && StrUtil.isBlank(userInfo.getParentId())) {
+		if (null != userInfo.getShareUserNumber() && StrUtil.isBlank(userInfo.getParentId())) {
 			// 查询分销配置
 			DistributionConfig distributionConfig = distributionConfigMapper.selectOne(Wrappers.lambdaQuery());
 			// 判断分销开启

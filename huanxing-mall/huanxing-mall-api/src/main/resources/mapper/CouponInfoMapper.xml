@@ -11,7 +11,8 @@
 	coupon_info.discount,
 	coupon_info.amount,
 	coupon_info.threshold,
-	coupon_info.total_count,
+	coupon_info.total_num,
+    coupon_info.remain_num,
 	coupon_info.assign_count,
 	coupon_info.used_count,
 	coupon_info.receive_count,
@@ -48,7 +49,7 @@
             AND coupon_info.`receive_ended_at` > now()
             AND now()> coupon_info.`receive_started_at`
             AND coupon_info.`status` = '0'
-            AND coupon_info.`total_count` >0
+            AND coupon_info.`remain_num` >0
             <if test="query.couponType !=null and query.couponType !=''">
                 AND coupon_info.`coupon_type` = #{query.couponType}
             </if>

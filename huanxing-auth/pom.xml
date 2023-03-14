@@ -34,26 +34,7 @@
         </dependency>
         <dependency>
             <groupId>com.huanxing</groupId>
-            <artifactId>huanxing-common-redis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.huanxing</groupId>
             <artifactId>huanxing-common-core</artifactId>
-        </dependency>
-        <!--数据库-->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        <!--JDBC相关-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-        <!--druid-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.huanxing</groupId>

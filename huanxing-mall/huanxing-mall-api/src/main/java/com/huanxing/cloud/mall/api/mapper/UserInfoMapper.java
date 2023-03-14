@@ -24,6 +24,6 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
 	 * @param userInfoDTO
 	 * @return: com.baomidou.mybatisplus.core.metadata.IPage<com.huanxing.cloud.mall.common.entity.UserInfo>
 	 */
-	IPage<UserInfo> selectPage(Page page, @Param("query") UserInfoDTO userInfoDTO);
+	IPage<UserInfo> selectUserPage(Page page, @Param("query") UserInfoDTO userInfoDTO);
 
 }

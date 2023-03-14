@@ -25,9 +25,6 @@
         <collection property="goodsSkuSpecsValues" column="{skuId=id}"
                     ofType="com.huanxing.cloud.mall.common.entity.GoodsSkuSpecsValue"
                     select="com.huanxing.cloud.mall.api.mapper.GoodsSkuSpecsValueMapper.selectBySkuId"></collection>
-        <collection property="grouponPrice" column="{skuId=id}"
-                    ofType="java.math.BigDecimal"
-                    select="com.huanxing.cloud.mall.api.mapper.GrouponSkuMapper.selectBySkuId"></collection>
     </resultMap>
     <select id="selectBySpuId" resultMap="goodsSkuResultMap">
         SELECT

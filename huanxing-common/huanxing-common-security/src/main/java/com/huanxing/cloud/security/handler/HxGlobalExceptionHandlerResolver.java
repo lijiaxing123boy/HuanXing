@@ -1,13 +1,19 @@
 package com.huanxing.cloud.security.handler;
 
 import cn.dev33.satoken.exception.NotLoginException;
+import cn.hutool.core.util.StrUtil;
 import com.huanxing.cloud.common.core.entity.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * 全局异常处理器
@@ -32,6 +38,26 @@ public class HxGlobalExceptionHandlerResolver {
 	public Result handleGlobalException(Exception e) {
 		log.error("全局异常信息 ex={}", e.getMessage(), e);
 		return Result.fail(e.getLocalizedMessage());
+	}
+
+	/**
+	 * 结构体参数校验异常
+	 *
+	 * @author lijx
+	 * @date 2022/5/3 14:15
+	 * @version 1.0
+	 */
+	@ExceptionHandler(BindException.class)
+	public Result bindException(BindException ex) {
+		log.warn("BindException:", ex);
+		// 拿到@NotNull,@NotBlank和 @NotEmpty等注解上的message值
+		String msg = Objects.requireNonNull(ex.getBindingResult().getFieldError()).getDefaultMessage();
+		if (StrUtil.isNotEmpty(msg)) {
+			// 自定义状态返回
+			return Result.fail(msg);
+		}
+
+		return Result.fail(ex.getMessage());
 	}
 
 	/**

@@ -24,9 +24,6 @@
         <collection property="goodsSpuSpecs" column="{spuId=id}"
                     ofType="com.huanxing.cloud.mall.common.entity.GoodsSpuSpecs"
                     select="com.huanxing.cloud.mall.api.mapper.GoodsSpuSpecsMapper.selectListBySpuId2"></collection>
-        <collection property="grouponInfo" column="{spuId=id}"
-                    ofType="com.huanxing.cloud.mall.common.entity.GrouponInfo"
-                    select="com.huanxing.cloud.mall.api.mapper.GrouponInfoMapper.selectBySpuId"></collection>
     </resultMap>
 
 
@@ -34,13 +31,6 @@
         <collection property="freightTemplate" column="{id=freight_template_id}"
                     ofType="com.huanxing.cloud.mall.common.entity.FreightTemplate"
                     select="com.huanxing.cloud.mall.api.mapper.FreightTemplateMapper.selectById"></collection>
-    </resultMap>
-
-
-    <resultMap id="pageResultMap" extends="resultMap" type="com.huanxing.cloud.mall.common.entity.GoodsSpu">
-        <collection property="grouponInfo" column="{spuId=id}"
-                    ofType="com.huanxing.cloud.mall.common.entity.GrouponInfo"
-                    select="com.huanxing.cloud.mall.api.mapper.GrouponInfoMapper.selectBySpuId"></collection>
     </resultMap>
 
     <sql id="goodsSpuSql">
@@ -63,7 +53,7 @@
         goods_spu.low_price,
         goods_spu.high_price
     </sql>
-    <select id="selectApiPage" resultMap="pageResultMap">
+    <select id="selectApiPage" resultType="com.huanxing.cloud.mall.common.entity.GoodsSpu">
         SELECT
         <include refid="goodsSpuSql"/>,
         goods_category.name AS categoryName

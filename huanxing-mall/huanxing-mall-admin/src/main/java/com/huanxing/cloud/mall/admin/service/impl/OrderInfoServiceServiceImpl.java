@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.huanxing.cloud.common.core.constant.CacheConstants;
-import com.huanxing.cloud.common.kuaidi100.util.Kuaidi100Utils;
+import com.huanxing.cloud.common.logistics.util.Kuaidi100Utils;
 import com.huanxing.cloud.mall.admin.mapper.GoodsSkuMapper;
 import com.huanxing.cloud.mall.admin.mapper.OrderInfoMapper;
 import com.huanxing.cloud.mall.admin.mapper.OrderItemMapper;
@@ -23,6 +23,7 @@ import com.huanxing.cloud.mall.common.enums.MallErrorCodeEnum;
 import com.huanxing.cloud.mall.common.enums.OrderLogisticsStateEnum;
 import com.huanxing.cloud.mall.common.enums.OrderStatusEnum;
 import com.huanxing.cloud.mall.common.properties.MallConfigProperties;
+import com.huanxing.cloud.security.handler.HxBusinessException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -73,24 +74,29 @@ public class OrderInfoServiceServiceImpl extends ServiceImpl<OrderInfoMapper, Or
 		// 查询物流信息
 		OrderLogistics orderLogistics = orderLogisticsMapper.selectById(orderInfo.getOrderLogisticsId());
 		if (ObjectUtil.isNull(orderLogistics)) {
-			throw new RuntimeException("物流信息不存在");
+			throw new HxBusinessException(MallErrorCodeEnum.ERROR_60021.getMsg());
 		}
 		if (StrUtil.isAllEmpty(mallConfigProperties.getLogisticsKey(), mallConfigProperties.getNotifyDomain())) {
-			throw new RuntimeException(MallErrorCodeEnum.ERROR_90001.getMsg());
+			throw new HxBusinessException(MallErrorCodeEnum.ERROR_90001.getMsg());
 		}
 		orderLogistics.setLogisticsNo(orderInfo.getLogisticsNo());
 		orderLogistics.setLogisticsCode(orderInfo.getLogisticsCode());
 		orderLogistics.setLogisticsName(orderInfo.getLogisticsName());
 		orderLogistics.setState(OrderLogisticsStateEnum.STATUS_1.getCode());
-		String logisticsUrl = MallOrderConstants.NOTIFY_LOGISTICS_URL.replace("${logisticsId}", orderLogistics.getId())
-				.replace("${tenantId}", orderLogistics.getTenantId());
+
+		String logisticsUrl = MallOrderConstants.NOTIFY_LOGISTICS_URL
+				.replace(MallOrderConstants.LOGISTICS_ID_KEY, orderLogistics.getId())
+				.replace(MallOrderConstants.TENANT_ID_KEY, orderLogistics.getTenantId());
 		kuaidi100Utils.poll(orderLogistics.getLogisticsCode(), orderLogistics.getLogisticsNo(),
 				orderLogistics.getDetailAddress().substring(0, orderLogistics.getDetailAddress().indexOf("-")),
 				mallConfigProperties.getLogisticsKey(), mallConfigProperties.getNotifyDomain() + logisticsUrl,
 				orderLogistics.getTelephone());
+
 		orderLogisticsMapper.updateById(orderLogistics);
-		// 保存发货订单到redis 30分钟 自动取消
-		redisTemplate.opsForValue().set(CacheConstants.MALL_CACHE_ORDER_STATUS_3 + orderInfo.getId(), orderInfo.getId(),
+		// 保存发货订单到redis 达到配置天数自动取消
+		String key = String.format("{}:{}:{}", orderLogistics.getTenantId(), CacheConstants.MALL_CACHE_ORDER_STATUS_3,
+				orderInfo.getId());
+		redisTemplate.opsForValue().set(key, orderInfo.getId(),
 				mallConfigProperties.getDefaultReceiverTime() * 24 * 60 * 60, TimeUnit.SECONDS);
 		return baseMapper.updateById(orderInfo) > 0;
 	}

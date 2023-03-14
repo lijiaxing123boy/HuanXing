@@ -2,7 +2,6 @@ package com.huanxing.cloud.common.job.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
  * xxlJob配置
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
  * @date 2022/6/2
  */
 @Data
-@Component
 @ConfigurationProperties(prefix = "xxl.job")
 public class XxlJobProperties {
 

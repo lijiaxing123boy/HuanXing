@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
-import com.huanxing.cloud.common.core.constant.CommonConstants;
 import com.huanxing.cloud.mall.api.mapper.DistributionOrderMapper;
 import com.huanxing.cloud.mall.api.mapper.GoodsSkuMapper;
 import com.huanxing.cloud.mall.api.mapper.UserBillMapper;
@@ -97,7 +96,7 @@ public class DistributionOrderServiceImpl extends ServiceImpl<DistributionOrderM
 			DistributionOrder distributionOrder = new DistributionOrder();
 			distributionOrder.setOrderId(orderInfo.getId());
 			distributionOrder.setUserId(orderInfo.getUserId());
-			distributionOrder.setStatus(CommonConstants.NO);
+			distributionOrder.setStatus(MallOrderConstants.DISTRIBUTION_STATUS_1);
 			distributionOrder.setTotalAmount(BigDecimal.ZERO);
 			distributionOrder.setDistributionUserId(distributionUser.getUserId());
 			distributionOrder.setDistributionLevel(

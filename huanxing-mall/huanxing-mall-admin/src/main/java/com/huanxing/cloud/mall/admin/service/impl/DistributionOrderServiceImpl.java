@@ -20,7 +20,7 @@ public class DistributionOrderServiceImpl extends ServiceImpl<DistributionOrderM
 
 	@Override
 	public IPage<DistributionOrder> getPage(Page page, DistributionOrder distributionOrder) {
-		return baseMapper.selectPage(page, distributionOrder);
+		return baseMapper.selectDistributionOrderPage(page, distributionOrder);
 	}
 
 }

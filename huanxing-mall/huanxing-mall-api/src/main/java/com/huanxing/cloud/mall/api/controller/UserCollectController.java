@@ -1,6 +1,5 @@
 package com.huanxing.cloud.mall.api.controller;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.huanxing.cloud.common.core.entity.Result;
 import com.huanxing.cloud.mall.api.annotation.HxCheckLogin;

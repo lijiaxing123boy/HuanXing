@@ -8,9 +8,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderV3Request;
 import com.huanxing.cloud.common.core.constant.CacheConstants;
 import com.huanxing.cloud.common.core.constant.CommonConstants;
 import com.huanxing.cloud.common.core.constant.RocketMqConstants;
+import com.huanxing.cloud.common.core.constant.SecurityConstants;
+import com.huanxing.cloud.common.core.entity.Result;
 import com.huanxing.cloud.common.core.util.SnowflakeIdUtils;
 import com.huanxing.cloud.mall.api.factory.EventFactory;
 import com.huanxing.cloud.mall.api.factory.handler.NotifyOrderHandler;
@@ -19,15 +22,20 @@ import com.huanxing.cloud.mall.api.service.ICouponUserService;
 import com.huanxing.cloud.mall.api.service.IOrderInfoService;
 import com.huanxing.cloud.mall.api.service.IOrderItemService;
 import com.huanxing.cloud.mall.api.service.IOrderLogisticsService;
+import com.huanxing.cloud.mall.api.utils.HxTokenHolder;
 import com.huanxing.cloud.mall.common.constant.MallEventConstants;
 import com.huanxing.cloud.mall.common.constant.MallOrderConstants;
+import com.huanxing.cloud.mall.common.dto.HxTokenInfo;
+import com.huanxing.cloud.mall.common.dto.OrderConsumerDTO;
 import com.huanxing.cloud.mall.common.dto.PlaceOrderDTO;
 import com.huanxing.cloud.mall.common.dto.PlaceOrderSkuDTO;
 import com.huanxing.cloud.mall.common.entity.*;
 import com.huanxing.cloud.mall.common.enums.CouponUserStatusEnum;
 import com.huanxing.cloud.mall.common.enums.MallErrorCodeEnum;
 import com.huanxing.cloud.mall.common.enums.OrderStatusEnum;
+import com.huanxing.cloud.mall.common.feign.FeignWxPayService;
 import com.huanxing.cloud.mall.common.properties.MallConfigProperties;
+import com.huanxing.cloud.pay.common.constants.PayConstants;
 import com.huanxing.cloud.security.handler.HxBusinessException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,8 +87,6 @@ public class OrderInfoServiceServiceImpl extends ServiceImpl<OrderInfoMapper, Or
 
 	private final DistributionOrderMapper distributionOrderMapper;
 
-	private final GrouponSkuMapper grouponSkuMapper;
-
 	private final CouponInfoMapper couponInfoMapper;
 
 	private final ICouponUserService couponUserService;
@@ -88,6 +94,8 @@ public class OrderInfoServiceServiceImpl extends ServiceImpl<OrderInfoMapper, Or
 	private final FreightTemplateMapper freightTemplateMapper;
 
 	private final CouponGoodsMapper couponGoodsMapper;
+
+	private final FeignWxPayService feignWxPayService;
 
 	@Override
 	public IPage<OrderInfo> apiPage(Page page, OrderInfo orderInfo) {
@@ -156,7 +164,7 @@ public class OrderInfoServiceServiceImpl extends ServiceImpl<OrderInfoMapper, Or
 	}
 
 	public BigDecimal freightCompute(FreightTemplate freightTemplate, BigDecimal quantity, BigDecimal count) {
-		BigDecimal freightPrice = BigDecimal.ZERO;
+		BigDecimal freightPrice;
 		if (quantity.compareTo(freightTemplate.getFirstNum()) <= 0) {
 			// 首件商品
 			freightPrice = freightTemplate.getFirstFreight();
@@ -378,6 +386,7 @@ public class OrderInfoServiceServiceImpl extends ServiceImpl<OrderInfoMapper, Or
 				}
 			}
 		}
+		// 物流配送
 		if (MallOrderConstants.DELIVERY_WAY_1.equals(orderInfo.getDeliveryWay())) {
 			// 保存物流信息
 			OrderLogistics orderLogistics = orderLogisticsService.saveOrderLogistics(placeOrderDTO.getUserAddressId());
@@ -396,7 +405,10 @@ public class OrderInfoServiceServiceImpl extends ServiceImpl<OrderInfoMapper, Or
 		orderItemList.forEach(orderItem -> orderItem.setOrderId(orderInfo.getId()));
 		orderItemService.saveBatch(orderItemList);
 		// rocketmq 延迟消息 30分钟取消订单
-		rocketMQTemplate.syncSend(RocketMqConstants.ORDER_CANCEL_TOPIC, new GenericMessage<>(orderInfo.getId()),
+		OrderConsumerDTO orderConsumerDTO = new OrderConsumerDTO();
+		orderConsumerDTO.setOrderId(orderInfo.getId());
+		orderConsumerDTO.setTenantId(orderInfo.getTenantId());
+		rocketMQTemplate.syncSend(RocketMqConstants.ORDER_CANCEL_TOPIC, new GenericMessage<>(orderConsumerDTO),
 				RocketMqConstants.TIME_OUT, RocketMqConstants.ORDER_CANCEL_LEVEL);
 		return orderInfo;
 	}
@@ -474,21 +486,87 @@ public class OrderInfoServiceServiceImpl extends ServiceImpl<OrderInfoMapper, Or
 				DistributionConfig distributionConfig = distributionConfigMapper.selectOne(Wrappers.lambdaQuery());
 				distributionOrders.forEach(distributionOrder -> {
 					// 保存分销订单到redis
-					redisTemplate.opsForValue().set(
-							CacheConstants.MALL_CACHE_DISTRIBUTION_STATUS + distributionOrder.getId(),
-							distributionOrder.getId(), distributionConfig.getFrozenTime() * 24 * 60 * 60,
-							TimeUnit.SECONDS);
+					String key = String.format("{}:{}:{}", distributionOrder.getTenantId(),
+							CacheConstants.MALL_CACHE_DISTRIBUTION_STATUS, distributionOrder.getId());
+					redisTemplate.opsForValue().set(key, distributionOrder.getId(),
+							distributionConfig.getFrozenTime() * 24 * 60 * 60, TimeUnit.SECONDS);
 				});
 			}
 		}
 		// 处理默认评价逻辑
 		if (CommonConstants.NO.equals(orderInfo.getAppraiseStatus())) {
 			// 保存待评价订单到redis
-			redisTemplate.opsForValue().set(CacheConstants.MALL_CACHE_ORDER_APPRAISE_STATUS + orderInfo.getId(),
-					orderInfo.getId(), mallConfigProperties.getDefaultAppraiseTime() * 24 * 60 * 60, TimeUnit.SECONDS);
+			String key = String.format("{}:{}:{}", orderInfo.getTenantId(),
+					CacheConstants.MALL_CACHE_ORDER_APPRAISE_STATUS, orderInfo.getId());
+			redisTemplate.opsForValue().set(key, orderInfo.getId(),
+					mallConfigProperties.getDefaultAppraiseTime() * 24 * 60 * 60, TimeUnit.SECONDS);
 		}
 
 		return Boolean.TRUE;
+	}
+
+	@Override
+	public Result unifiedOrder(OrderInfo orderInfo) {
+		String tradeType = orderInfo.getTradeType();
+		String paymentType = orderInfo.getPaymentType();
+		if (StrUtil.isBlank(tradeType)) {
+			return Result.fail(MallErrorCodeEnum.ERROR_60001.getCode(), MallErrorCodeEnum.ERROR_60001.getMsg());
+		}
+		if (StrUtil.isBlank(paymentType)) {
+			return Result.fail(MallErrorCodeEnum.ERROR_60002.getCode(), MallErrorCodeEnum.ERROR_60002.getMsg());
+		}
+		orderInfo = this.getById(orderInfo.getId());
+		if (ObjectUtil.isNull(orderInfo)) {
+			return Result.fail(MallErrorCodeEnum.ERROR_60003.getCode(), MallErrorCodeEnum.ERROR_60003.getMsg());
+		}
+		// 只有未支付的详单能发起支付
+		if (CommonConstants.YES.equals(orderInfo.getPayStatus())) {
+			return Result.fail(MallErrorCodeEnum.ERROR_60004.getCode(), MallErrorCodeEnum.ERROR_60004.getMsg());
+		}
+		// 用户信息
+		HxTokenInfo hxTokenInfo = HxTokenHolder.getTokenInfo();
+		if (PayConstants.TRADE_TYPE_JSAPI.equals(tradeType) && StrUtil.isBlank(hxTokenInfo.getOpenId())) {
+			return Result.fail(MallErrorCodeEnum.ERROR_50001.getCode(), MallErrorCodeEnum.ERROR_50001.getMsg());
+		}
+		// 0元支付
+		if (orderInfo.getPaymentPrice().compareTo(BigDecimal.ZERO) == 0) {
+			orderInfo.setPaymentTime(LocalDateTime.now());
+			this.notifyOrder(orderInfo);
+			return Result.success();
+		}
+		if (StrUtil.isBlank(mallConfigProperties.getNotifyDomain())) {
+			return Result.fail(MallErrorCodeEnum.ERROR_90001.getCode(), MallErrorCodeEnum.ERROR_90001.getMsg());
+		}
+		switch (paymentType) {
+			case PayConstants.PAY_TYPE_1:
+				String body = "商城购物";
+				// body = body.length() > 30 ? body.substring(0, 29) : body;
+				WxPayUnifiedOrderV3Request wxPayUnifiedOrderV3Request = new WxPayUnifiedOrderV3Request();
+				wxPayUnifiedOrderV3Request.setOutTradeNo(orderInfo.getOrderNo());
+				wxPayUnifiedOrderV3Request.setDescription(body);
+				wxPayUnifiedOrderV3Request.setNotifyUrl(mallConfigProperties.getNotifyDomain()
+						+ MallOrderConstants.NOTIFY_PAY_WX_URL + orderInfo.getTenantId());
+				// 订单金额 start
+				WxPayUnifiedOrderV3Request.Amount amount = new WxPayUnifiedOrderV3Request.Amount();
+				amount.setTotal(orderInfo.getPaymentPrice().multiply(BigDecimal.valueOf(100)).intValue());
+				amount.setCurrency(PayConstants.CURRENCY);
+				wxPayUnifiedOrderV3Request.setAmount(amount);
+				// 订单金额 end
+
+				if (PayConstants.TRADE_TYPE_JSAPI.equals(tradeType)) {
+					// 支付者 start
+					WxPayUnifiedOrderV3Request.Payer payer = new WxPayUnifiedOrderV3Request.Payer();
+					payer.setOpenid(hxTokenInfo.getOpenId());
+					wxPayUnifiedOrderV3Request.setPayer(payer);
+					// 支付者 end
+				}
+				return feignWxPayService.createOrder(wxPayUnifiedOrderV3Request, tradeType,
+						SecurityConstants.SOURCE_IN);
+			case PayConstants.PAY_TYPE_2:
+				return Result.fail(MallErrorCodeEnum.ERROR_99999.getCode(), MallErrorCodeEnum.ERROR_99999.getMsg());
+			default:
+				return Result.fail(MallErrorCodeEnum.ERROR_60005.getCode(), MallErrorCodeEnum.ERROR_60005.getMsg());
+		}
 	}
 
 }

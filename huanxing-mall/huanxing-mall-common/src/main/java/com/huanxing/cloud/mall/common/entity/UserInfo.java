@@ -91,7 +91,7 @@ public class UserInfo extends Model<UserInfo> {
 
 	@ApiModelProperty(value = "分销用户编号")
 	@TableField(exist = false)
-	private String shareUserNumber;
+	private Integer shareUserNumber;
 
 	@ApiModelProperty(value = "上级用户信息")
 	@TableField(exist = false)

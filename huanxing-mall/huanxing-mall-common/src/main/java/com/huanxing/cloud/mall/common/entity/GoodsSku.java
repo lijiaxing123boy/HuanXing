@@ -81,10 +81,6 @@ public class GoodsSku extends Model<GoodsSku> {
 	@Version
 	private Integer version;
 
-	@ApiModelProperty(value = "拼团价格")
-	@TableField(exist = false)
-	private BigDecimal grouponPrice;
-
 	@ApiModelProperty(value = "sku规格值集合")
 	@TableField(exist = false)
 	private List<GoodsSkuSpecsValue> goodsSkuSpecsValues;

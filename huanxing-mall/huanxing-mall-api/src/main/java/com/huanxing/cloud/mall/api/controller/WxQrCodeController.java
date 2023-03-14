@@ -3,7 +3,7 @@ package com.huanxing.cloud.mall.api.controller;
 import com.huanxing.cloud.common.core.constant.SecurityConstants;
 import com.huanxing.cloud.common.core.entity.Result;
 import com.huanxing.cloud.mall.common.feign.FeignWxQrCodeService;
-import com.huanxing.cloud.miniapp.common.vo.WxQrCodeVO;
+import com.huanxing.cloud.miniapp.common.dto.WxQrCodeDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -29,8 +29,8 @@ public class WxQrCodeController {
 
 	@ApiOperation(value = "生成微信小程序码")
 	@GetMapping
-	public Result getWxQrCode(WxQrCodeVO wxQrCodeVO) {
-		return Result.success(feignWxQrCodeService.createWxaCodeUnlimit(wxQrCodeVO, SecurityConstants.SOURCE_IN));
+	public Result getWxQrCode(WxQrCodeDTO wxQrCodeDTO) {
+		return feignWxQrCodeService.createWxaCodeUnlimit(wxQrCodeDTO, SecurityConstants.SOURCE_IN);
 	}
 
 }

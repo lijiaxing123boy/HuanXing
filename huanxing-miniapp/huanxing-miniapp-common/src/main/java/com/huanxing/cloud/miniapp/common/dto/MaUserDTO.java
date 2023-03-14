@@ -19,4 +19,6 @@ public class MaUserDTO implements Serializable {
 
 	private String iv;
 
+	private Integer shareUserNumber;
+
 }

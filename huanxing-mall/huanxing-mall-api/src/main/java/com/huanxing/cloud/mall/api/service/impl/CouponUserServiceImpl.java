@@ -34,7 +34,7 @@ public class CouponUserServiceImpl extends ServiceImpl<CouponUserMapper, CouponU
 			throw new HxBusinessException(MallErrorCodeEnum.ERROR_60062.getCode(),
 					MallErrorCodeEnum.ERROR_60062.getMsg());
 		}
-		if (couponInfo.getTotalCount() <= 0) {
+		if (couponInfo.getRemainNum() <= 0) {
 			throw new HxBusinessException(MallErrorCodeEnum.ERROR_60066.getCode(),
 					MallErrorCodeEnum.ERROR_60066.getMsg());
 		}
@@ -54,7 +54,7 @@ public class CouponUserServiceImpl extends ServiceImpl<CouponUserMapper, CouponU
 			throw new HxBusinessException(MallErrorCodeEnum.ERROR_41000.getCode(),
 					MallErrorCodeEnum.ERROR_41000.getMsg());
 		}
-		couponInfo.setTotalCount(couponInfo.getTotalCount() - 1);
+		couponInfo.setRemainNum(couponInfo.getRemainNum() - 1);
 		couponInfo.setAssignCount(couponInfo.getAssignCount() + 1);
 		if (couponInfoMapper.updateById(couponInfo) <= 0) {
 			throw new HxBusinessException(MallErrorCodeEnum.ERROR_41000.getCode(),

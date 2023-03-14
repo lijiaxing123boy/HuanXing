@@ -1,6 +1,5 @@
 package com.huanxing.cloud.common.job.annotation;
 
-import com.huanxing.cloud.common.job.config.HxBeanDefinitionRegistrar;
 import com.huanxing.cloud.common.job.config.XxlJobConfig;
 import org.springframework.context.annotation.Import;
 
@@ -16,7 +15,7 @@ import java.lang.annotation.*;
 @Inherited
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@Import({ XxlJobConfig.class, HxBeanDefinitionRegistrar.class })
+@Import({ XxlJobConfig.class })
 public @interface HxEnableXxlJob {
 
 }

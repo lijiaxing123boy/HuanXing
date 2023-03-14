@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.huanxing.cloud.common.core.constant.CacheConstants;
 import com.huanxing.cloud.common.core.constant.CommonConstants;
 import com.huanxing.cloud.common.core.entity.Result;
 import com.huanxing.cloud.common.log.annotation.SysLog;
@@ -22,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -120,12 +122,7 @@ public class SysMenuController {
 	@SaCheckPermission("upms:sysmenu:del")
 	@DeleteMapping("/{id}")
 	public Result del(@PathVariable("id") String id) {
-		SysMenu sysMenu = new SysMenu();
-		sysMenu.setParentId(id);
-		long count = sysMenuService.count(Wrappers.lambdaQuery(sysMenu));
-		if (count > 0) {
-			return Result.fail("请先删除下级菜单");
-		}
+
 		return Result.success(sysMenuService.removeById(id));
 	}
 

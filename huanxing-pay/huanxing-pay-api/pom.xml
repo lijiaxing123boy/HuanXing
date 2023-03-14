@@ -45,11 +45,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
-        <!--           缓存模块-->
-        <dependency>
-            <groupId>com.huanxing</groupId>
-            <artifactId>huanxing-common-redis</artifactId>
-        </dependency>
         <!--        安全模块-->
         <dependency>
             <groupId>com.huanxing</groupId>

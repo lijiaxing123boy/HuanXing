@@ -9,15 +9,6 @@ package com.huanxing.cloud.mall.common.constant;
 public class MallEventConstants {
 
 	/**
-	 * 拼团参团状态：状态：0.拼团中；1.已成团 ;2.已过期
-	 */
-	public static final String GROUPON_RECORD_STATUS_0 = "0";
-
-	public static final String GROUPON_RECORD_STATUS_1 = "1";
-
-	public static final String GROUPON_RECORD_STATUS_2 = "2";
-
-	/**
 	 * 可用范围：1.全部商品；2.指定商品；
 	 */
 	public static final String USE_RANGE_1 = "1";

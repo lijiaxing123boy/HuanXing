@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>huanxing-upms-admin</artifactId>
     <description>权限系统管理模块</description>
+
     <dependencies>
         <!--            安全模块-->
         <dependency>
@@ -59,10 +60,6 @@
         <dependency>
             <groupId>com.huanxing</groupId>
             <artifactId>huanxing-upms-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.huanxing</groupId>
-            <artifactId>huanxing-common-redis</artifactId>
         </dependency>
         <!--           日志模块-->
         <dependency>

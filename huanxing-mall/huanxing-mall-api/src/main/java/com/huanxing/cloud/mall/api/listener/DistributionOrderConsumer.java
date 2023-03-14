@@ -4,7 +4,9 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.huanxing.cloud.common.core.constant.RocketMqConstants;
+import com.huanxing.cloud.common.myabtis.tenant.HxTenantContextHolder;
 import com.huanxing.cloud.mall.api.service.*;
+import com.huanxing.cloud.mall.common.dto.OrderConsumerDTO;
 import com.huanxing.cloud.mall.common.entity.DistributionOrder;
 import com.huanxing.cloud.mall.common.entity.OrderInfo;
 import com.huanxing.cloud.mall.common.entity.OrderItem;
@@ -16,6 +18,7 @@ import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 订单分销消费者 特别注意，这里topic必须和生产者的一致
@@ -28,7 +31,7 @@ import java.util.List;
 @AllArgsConstructor
 @RocketMQMessageListener(topic = RocketMqConstants.DISTRIBUTION_ORDER_TOPIC,
 		consumerGroup = RocketMqConstants.DISTRIBUTION_ORDER_TOPIC)
-public class DistributionOrderConsumer implements RocketMQListener<String> {
+public class DistributionOrderConsumer implements RocketMQListener<OrderConsumerDTO> {
 
 	private final IOrderInfoService orderInfoService;
 
@@ -41,9 +44,10 @@ public class DistributionOrderConsumer implements RocketMQListener<String> {
 	private final IUserInfoService userInfoService;
 
 	@Override
-	public void onMessage(String orderId) {
-		log.info("开始消费消息，消费信息为:{}", orderId);
-		OrderInfo orderInfo = orderInfoService.getById(orderId);
+	public void onMessage(OrderConsumerDTO orderConsumerDTO) {
+		log.info("开始消费消息，消费信息为:{}", orderConsumerDTO);
+		HxTenantContextHolder.setCurrentTenantId(orderConsumerDTO.getTenantId());
+		OrderInfo orderInfo = orderInfoService.getById(orderConsumerDTO.getOrderId());
 		if (ObjectUtil.isNull(orderInfo)) {
 			return;
 		}

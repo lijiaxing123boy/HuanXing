@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: huanxing-gateway
+    name: @artifactId@
   cloud:
     nacos:
       discovery:
@@ -20,7 +20,7 @@ spring:
         dashboard: localhost:8080
         port: 8719
   profiles:
-    active: dev
+    active: @profiles.active@
 management:
   endpoints:
     web:

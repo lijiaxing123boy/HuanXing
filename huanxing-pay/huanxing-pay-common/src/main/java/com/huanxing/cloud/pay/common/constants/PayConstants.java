@@ -8,7 +8,7 @@ package com.huanxing.cloud.pay.common.constants;
  */
 public class PayConstants {
 
-	public static final String TRADE_TYPE_JSAP = "JSAPI";
+	public static final String TRADE_TYPE_JSAPI = "JSAPI";
 
 	public static final String TRADE_TYPE_H5 = "H5";
 

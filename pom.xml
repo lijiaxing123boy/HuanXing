@@ -25,25 +25,29 @@
         <java.version>1.8</java.version>
         <ttl.version>2.11.4</ttl.version>
         <druid.version>1.2.5</druid.version>
-        <hutool.version>5.8.8</hutool.version>
+        <hutool.version>5.8.12</hutool.version>
         <kaptcha.version>2.3.2</kaptcha.version>
-        <aliyun-oss.version>3.9.1</aliyun-oss.version>
-        <mybatis-plus.version>3.5.1</mybatis-plus.version>
-        <swagger.core.version>1.5.22</swagger.core.version>
-        <spring-javaformat.version>0.0.34</spring-javaformat.version>
-        <weixin-java.version>4.4.0</weixin-java.version>
         <rocketmq.version>2.1.0</rocketmq.version>
-        <alipay-easysdk.version>2.1.0</alipay-easysdk.version>
+        <sa-token.version>1.33.0</sa-token.version>
+        <oshi-core.version>3.5.0</oshi-core.version>
+        <aliyun-oss.version>3.9.1</aliyun-oss.version>
+        <weixin-java.version>4.4.0</weixin-java.version>
+        <mybatis-plus.version>3.5.3</mybatis-plus.version>
+        <swagger.core.version>1.5.22</swagger.core.version>
+        <kuaidi100-api.version>1.0.8</kuaidi100-api.version>
         <qiniu-sdk.version>[7.7.0, 7.7.99]</qiniu-sdk.version>
+        <alipay-easysdk.version>2.1.0</alipay-easysdk.version>
         <qcloud-cos-api.version>5.6.54</qcloud-cos-api.version>
         <mysql.connector.version>8.0.16</mysql.connector.version>
-        <spring-boot.version>2.7.4</spring-boot.version>
-        <spring-boot-admin.version>2.7.5</spring-boot-admin.version>
-        <spring-cloud.version>2021.0.4</spring-cloud.version>
+        <spring-javaformat.version>0.0.34</spring-javaformat.version>
+        <spring-boot.version>2.7.9</spring-boot.version>
+        <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
+        <spring-cloud.version>2021.0.5</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
-        <sa-token.version>1.33.0</sa-token.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -57,9 +61,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <!--Lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>de.codecentric</groupId>
@@ -91,12 +97,6 @@
             <dependency>
                 <groupId>com.huanxing</groupId>
                 <artifactId>huanxing-common-feign</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <!--           缓存模块-->
-            <dependency>
-                <groupId>com.huanxing</groupId>
-                <artifactId>huanxing-common-redis</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!--           核心模块-->
@@ -153,10 +153,10 @@
                 <artifactId>huanxing-common-job</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!--           快递100模块-->
+            <!--           物流模块-->
             <dependency>
                 <groupId>com.huanxing</groupId>
-                <artifactId>huanxing-common-kuaidi100</artifactId>
+                <artifactId>huanxing-common-logistics</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!--           Nacos操作配置模块-->
@@ -186,6 +186,12 @@
                 <groupId>com.aliyun.oss</groupId>
                 <artifactId>aliyun-sdk-oss</artifactId>
                 <version>${aliyun-oss.version}</version>
+            </dependency>
+<!--            快递100sdk-->
+            <dependency>
+                <groupId>com.github.kuaidi100-api</groupId>
+                <artifactId>sdk</artifactId>
+                <version>${kuaidi100-api.version}</version>
             </dependency>
             <!--            腾讯cos-->
             <dependency>
@@ -287,7 +293,7 @@
             <dependency>
                 <groupId>com.github.oshi</groupId>
                 <artifactId>oshi-core</artifactId>
-                <version>3.5.0</version>
+                <version>${oshi-core.version}</version>
             </dependency>
             <!--            Spring Boot Admin-->
             <dependency>
@@ -386,4 +392,28 @@
         </repository>
     </repositories>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <profiles.active>dev</profiles.active>
+            </properties>
+            <activation>
+                <!-- 默认环境 -->
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <profiles.active>test</profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <profiles.active>prod</profiles.active>
+            </properties>
+        </profile>
+    </profiles>
 </project>
